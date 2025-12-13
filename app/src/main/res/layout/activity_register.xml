@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cyber_dark_background"
+    android:fillViewport="true"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Header -->
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_cyber_logo"
+            android:layout_marginTop="32dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Account"
+            android:textColor="@color/cyber_text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start your cybersecurity journey today"
+            android:textColor="@color/cyber_text_secondary"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Form Đăng ký -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="24dp"
+            android:padding="20dp"
+            android:background="@drawable/input_field_background"
+            app:backgroundTint="@color/cyber_card_background">
+
+            <!-- Username -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Username"
+                android:textColor="@color/cyber_text_primary" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Choose a username"
+                android:textColorHint="@color/cyber_text_secondary"
+                android:textColor="@color/cyber_text_primary"
+                android:background="@drawable/input_field_background"
+                android:drawableStart="@drawable/ic_person"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:layout_marginTop="8dp" />
+
+            <!-- Email -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/cyber_text_primary" />
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="your@email.com"
+                android:textColorHint="@color/cyber_text_secondary"
+                android:textColor="@color/cyber_text_primary"
+                android:inputType="textEmailAddress"
+                android:background="@drawable/input_field_background"
+                android:drawableStart="@drawable/ic_email"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:layout_marginTop="8dp" />
+
+            <!-- Password -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Password"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/cyber_text_primary" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:endIconMode="password_toggle"
+                app:endIconTint="@color/cyber_text_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Create a strong password"
+                    android:textColorHint="@color/cyber_text_secondary"
+                    android:textColor="@color/cyber_text_primary"
+                    android:inputType="textPassword"
+                    android:background="@drawable/input_field_background"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="12dp"
+                    android:padding="12dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Confirm Password -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm Password"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/cyber_text_primary" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:endIconMode="password_toggle"
+                app:endIconTint="@color/cyber_text_primary">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Confirm your password"
+                    android:textColorHint="@color/cyber_text_secondary"
+                    android:textColor="@color/cyber_text_primary"
+                    android:inputType="textPassword"
+                    android:background="@drawable/input_field_background"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:drawablePadding="12dp"
+                    android:padding="12dp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Nút Create Account (SẼ GỬI MÃ OTP) -->
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnCreateAccount"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Send Verification Code"
+                android:textColor="@color/cyber_dark_background"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:background="@drawable/button_background_green"
+                android:layout_marginTop="24dp"/>
+
+            <!-- PHẦN XÁC NHẬN OTP (BAN ĐẦU ẨN) -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Verification Code"
+                android:textColor="@color/cyber_text_primary"
+                android:layout_marginTop="24dp"
+                android:visibility="gone"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etVerifyCode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter 6-digit code"
+                android:textColorHint="@color/cyber_text_secondary"
+                android:textColor="@color/cyber_text_primary"
+                android:inputType="number"
+                android:background="@drawable/input_field_background"
+                android:drawableStart="@drawable/ic_lock"
+                android:drawablePadding="12dp"
+                android:padding="12dp"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnVerifyCode"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Verify vs Create Account"
+                android:textColor="@color/cyber_dark_background"
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:background="@drawable/button_background_green"
+                android:layout_marginTop="8dp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <!-- Đăng ký -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="32dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? "
+                android:textColor="@color/cyber_text_secondary" />
+            <TextView
+                android:id="@+id/tvGoToLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sign in"
+                android:textStyle="bold"
+                android:textColor="@color/cyber_green_icon" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

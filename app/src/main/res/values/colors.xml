@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="cyber_dark_background">#0A0A0A</color>
+    <color name="cyber_card_background">#1E1E1E</color>
+    <color name="cyber_green_accent">#00FF88</color>
+    <color name="cyber_text_primary">#FFFFFF</color>
+    <color name="cyber_text_secondary">#B0B0B0</color>
+    <color name="cyber_input_background">#1A1C29</color>
+    <color name="cyber_input_stroke">#4A5070</color>
+    <color name="cyber_background">#0A191E</color>
+    <color name="cyber_green_main">#39BF8F</color>
+    <color name="cyber_green_icon">#33B888</color>
+    <color name="cyber_green_light">#66FFB3</color>
+    <color name="cyber_green_dark">#2D9973</color>
+    <color name="cyber_green_hover">#48D19F</color>
+    <color name="cyber_green_success">#4CAF50</color>
+    <color name="cyber_neon_glow">#00FF88</color>
+    <color name="cyber_teal_accent">#00CED1</color>
+    <color name="cyber_green_border">#39BF8F55</color>
+    <color name="background">#FF121212</color>
+    <color name="cyber_orange_premium">#FFA500</color>
+    <color name="cyber_streak_fire">#FF4500</color>
+    <color name="cyber_gradient_start_green">#39BF8F</color>
+    <color name="cyber_gradient_purple">#9370DB</color>
+    <color name="cyber_gradient_pink">#C71585</color>
+</resources>

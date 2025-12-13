@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_dashboard"
+            android:icon="@drawable/ic_dashboard"
+            android:title="Dashboard" />
+
+        <item
+            android:id="@+id/nav_rooms"
+            android:icon="@drawable/ic_rooms"
+            android:title="Rooms" />
+
+        <item
+            android:id="@+id/nav_ctf"
+            android:icon="@drawable/ic_ctf"
+            android:title="CTF Events" />
+    </group>
+
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="Đăng xuất" />
+    </group>
+
+</menu>

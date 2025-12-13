@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "297939872664",
+    "project_id": "appattt-3fd50",
+    "storage_bucket": "appattt-3fd50.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:297939872664:android:8d55892cdae300f2e899ed",
+        "android_client_info": {
+          "package_name": "com.example.appattt"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkmXp2tDeV7-SacJnWuAFaZeY9a-A5l2g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

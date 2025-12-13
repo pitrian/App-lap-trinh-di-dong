@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.CyberLearn" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/cyber_green_accent</item>
+        <item name="colorPrimaryVariant">@color/cyber_green_accent</item>
+        <item name="colorOnPrimary">@color/cyber_dark_background</item>
+        <item name="android:statusBarColor">@color/cyber_dark_background</item>
+        <item name="android:navigationBarColor">@color/cyber_dark_background</item>
+        <item name="android:windowBackground">@color/cyber_dark_background</item>
+    </style>
+    <style name="RecentActivityCardStyle">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardBackgroundColor">@color/cyber_card_background</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+</resources>
