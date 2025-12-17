@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/cyber_background">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/cyber_card_background"
+            app:titleTextColor="@color/cyber_text_primary"
+            app:navigationIcon="@drawable/ic_back"
+            app:title="Submit Write-up" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Title -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilTitle"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Title"
+                android:layout_marginBottom="16dp"
+                app:hintTextColor="@color/cyber_text_primary"
+                app:boxStrokeColor="@color/cyber_border"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/cyber_text_primary"
+                    android:maxLines="2"
+                    android:imeOptions="actionNext" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Room Name -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilRoom"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Room Name"
+                android:layout_marginBottom="16dp"
+                app:hintTextColor="@color/cyber_text_primary"
+                app:boxStrokeColor="@color/cyber_border"
+                app:endIconMode="clear_text">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etRoom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/cyber_text_primary"
+                    android:imeOptions="actionNext" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Difficulty -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilDifficulty"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Difficulty"
+                android:layout_marginBottom="16dp"
+                app:hintTextColor="@color/cyber_text_primary"
+                app:boxStrokeColor="@color/cyber_border">
+
+                <AutoCompleteTextView
+                    android:id="@+id/actvDifficulty"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/cyber_text_primary"
+                    android:imeOptions="actionNext" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Tags Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tags"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Selected Tags -->
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupSelected"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                app:chipSpacingHorizontal="4dp"
+                app:chipSpacingVertical="4dp"
+                app:singleLine="false" />
+
+            <!-- Add Tag Input -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilTag"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="Add tag"
+                    app:hintTextColor="@color/cyber_text_primary"
+                    app:boxStrokeColor="@color/cyber_border"
+                    app:endIconMode="clear_text">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTag"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/cyber_text_primary"
+                        android:imeOptions="actionDone" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnAddTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add"
+                    android:textColor="@color/cyber_green_main"
+                    app:backgroundTint="@color/cyber_card_background"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/cyber_green_main"
+                    app:strokeWidth="1dp"
+                    android:layout_marginStart="8dp"
+                    android:paddingHorizontal="16dp" />
+
+            </LinearLayout>
+
+            <!-- Popular Tags -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Popular Tags"
+                android:textColor="@color/cyber_text_secondary"
+                android:textSize="14sp"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupPopular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:chipSpacingHorizontal="4dp"
+                app:chipSpacingVertical="4dp"
+                app:singleLine="false">
+
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SQL Injection"
+                    android:textColor="@color/cyber_text_secondary"
+                    app:chipBackgroundColor="@color/cyber_card_background"
+                    app:closeIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="XSS"
+                    android:textColor="@color/cyber_text_secondary"
+                    app:chipBackgroundColor="@color/cyber_card_background"
+                    app:closeIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="CTF"
+                    android:textColor="@color/cyber_text_secondary"
+                    app:chipBackgroundColor="@color/cyber_card_background"
+                    app:closeIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Web Security"
+                    android:textColor="@color/cyber_text_secondary"
+                    app:chipBackgroundColor="@color/cyber_card_background"
+                    app:closeIconVisible="false" />
+
+                <com.google.android.material.chip.Chip
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Cryptography"
+                    android:textColor="@color/cyber_text_secondary"
+                    app:chipBackgroundColor="@color/cyber_card_background"
+                    app:closeIconVisible="false" />
+
+            </com.google.android.material.chip.ChipGroup>
+
+            <!-- Content -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Content (Markdown supported)"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:strokeColor="@color/cyber_border"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <!-- Toolbar -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:orientation="horizontal"
+                        android:background="@color/cyber_card_background"
+                        android:paddingHorizontal="8dp">
+
+                        <ImageView
+                            android:id="@+id/btnBold"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_bold"
+                            android:tint="@color/cyber_text_secondary"
+                            android:padding="8dp" />
+
+                        <ImageView
+                            android:id="@+id/btnItalic"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_italic"
+                            android:tint="@color/cyber_text_secondary"
+                            android:padding="8dp" />
+
+                        <ImageView
+                            android:id="@+id/btnCode"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_code"
+                            android:tint="@color/cyber_text_secondary"
+                            android:padding="8dp" />
+
+                        <ImageView
+                            android:id="@+id/btnLink"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_link"
+                            android:tint="@color/cyber_text_secondary"
+                            android:padding="8dp" />
+
+                        <ImageView
+                            android:id="@+id/btnImage"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:src="@drawable/ic_image"
+                            android:tint="@color/cyber_text_secondary"
+                            android:padding="8dp" />
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1" />
+
+                        <TextView
+                            android:id="@+id/tvWordCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0/5000"
+                            android:textColor="@color/cyber_text_secondary"
+                            android:textSize="12sp"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="8dp" />
+
+                    </LinearLayout>
+
+                    <!-- Editor -->
+                    <EditText
+                        android:id="@+id/etContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="400dp"
+                        android:hint="Write your write-up content here...\n\nYou can use Markdown syntax:\n# Heading\n**bold** *italic*\n```code```\n- list"
+                        android:textColor="@color/cyber_text_primary"
+                        android:textColorHint="@color/cyber_text_secondary"
+                        android:background="@null"
+                        android:gravity="top"
+                        android:inputType="textMultiLine"
+                        android:padding="16dp"
+                        android:scrollbars="vertical" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Markdown Guide -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="1dp"
+                app:strokeColor="@color/cyber_green_main"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💡 Markdown Guide"
+                        android:textColor="@color/cyber_green_main"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="# Header\n**bold** *italic*\n```code block```\n- list item\n[link](url)"
+                        android:textColor="@color/cyber_text_secondary"
+                        android:textSize="12sp"
+                        android:lineSpacingExtra="4dp" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Submit Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Submit Write-up"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="16dp"
+                app:backgroundTint="@color/cyber_green_main"
+                app:cornerRadius="12dp"
+                app:elevation="4dp" />
+
+            <!-- Or Save Draft -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSaveDraft"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:text="Save as Draft"
+                android:textColor="@color/cyber_text_secondary"
+                app:backgroundTint="@color/cyber_card_background"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/cyber_border"
+                app:strokeWidth="1dp" />
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="24dp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

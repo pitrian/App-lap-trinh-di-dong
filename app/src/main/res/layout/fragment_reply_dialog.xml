@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="@color/cyber_background">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Post a Reply"
+        android:textColor="@color/cyber_text_primary"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Reply content -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Your reply"
+        app:hintTextColor="@color/cyber_text_primary"
+        app:boxStrokeColor="@color/cyber_border"
+        app:endIconMode="clear_text"
+        android:layout_marginBottom="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etReplyContent"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:textColor="@color/cyber_text_primary"
+            android:gravity="top"
+            android:inputType="textMultiLine"
+            android:maxLines="10" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Formatting toolbar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:orientation="horizontal"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_bold"
+            android:tint="@color/cyber_text_secondary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="6dp" />
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_italic"
+            android:tint="@color/cyber_text_secondary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="6dp"
+            android:layout_marginStart="8dp" />
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_code"
+            android:tint="@color/cyber_text_secondary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="6dp"
+            android:layout_marginStart="8dp" />
+
+        <ImageView
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/ic_link"
+            android:tint="@color/cyber_text_secondary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:padding="6dp"
+            android:layout_marginStart="8dp" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0/2000"
+            android:textColor="@color/cyber_text_secondary"
+            android:textSize="12sp"
+            android:layout_gravity="center_vertical" />
+
+    </LinearLayout>
+
+    <!-- Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Cancel"
+            android:textColor="@color/cyber_text_secondary"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:paddingHorizontal="16dp" />
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Post Reply"
+            android:textColor="@color/cyber_green_main"
+            app:backgroundTint="@color/cyber_card_background"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/cyber_green_main"
+            app:strokeWidth="1dp"
+            android:paddingHorizontal="24dp"
+            android:layout_marginStart="12dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

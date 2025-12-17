@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/cyber_background">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@color/cyber_card_background"
+        android:paddingHorizontal="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Filter Options"
+            android:textColor="@color/cyber_text_primary"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:textColor="@color/cyber_text_secondary"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Sort by -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Sort by"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupSort"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <RadioButton
+                    android:id="@+id/radioNewest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Newest"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+                <RadioButton
+                    android:id="@+id/radioPopular"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Most Popular"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+                <RadioButton
+                    android:id="@+id/radioMostCommented"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Most Commented"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+                <RadioButton
+                    android:id="@+id/radioTrending"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Trending"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+            </RadioGroup>
+
+            <!-- Time filter -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Time Range"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <RadioGroup
+                android:id="@+id/radioGroupTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <RadioButton
+                    android:id="@+id/radioAllTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="All Time"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+                <RadioButton
+                    android:id="@+id/radioToday"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Today"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+                <RadioButton
+                    android:id="@+id/radioWeek"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This Week"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+                <RadioButton
+                    android:id="@+id/radioMonth"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This Month"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+                <RadioButton
+                    android:id="@+id/radioYear"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="This Year"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="8dp" />
+
+            </RadioGroup>
+
+            <!-- Status filters -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Status"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginBottom="16dp">
+
+                <CheckBox
+                    android:id="@+id/cbSolved"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Show Solved Only"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="4dp" />
+
+                <CheckBox
+                    android:id="@+id/cbPinned"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Show Pinned Only"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="4dp" />
+
+                <CheckBox
+                    android:id="@+id/cbNoReplies"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Show No Replies"
+                    android:textColor="@color/cyber_text_primary"
+                    android:paddingVertical="4dp" />
+
+            </LinearLayout>
+
+            <!-- Difficulty filters -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Difficulty"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupDifficulties"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:chipSpacingHorizontal="4dp"
+                app:chipSpacingVertical="4dp"
+                app:singleLine="false" />
+
+            <!-- Category filters -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Category"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipGroupCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:chipSpacingHorizontal="4dp"
+                app:chipSpacingVertical="4dp"
+                app:singleLine="false" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+    <!-- Footer buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@color/cyber_card_background">
+
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Reset"
+            android:textColor="@color/cyber_text_secondary"
+            app:backgroundTint="@color/cyber_card_background"
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/cyber_border"
+            app:strokeWidth="1dp"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/btnApply"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Apply Filters"
+            android:textColor="@color/cyber_text_primary"
+            app:backgroundTint="@color/cyber_green_main"
+            app:cornerRadius="8dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_view"
+        android:title="View Category" />
+    <item
+        android:id="@+id/menu_view_new"
+        android:title="View New Posts" />
+    <item
+        android:id="@+id/menu_mark_read"
+        android:title="Mark as Read" />
+    <item
+        android:id="@+id/menu_notifications"
+        android:title="Notification Settings" />
+    <item
+        android:id="@+id/menu_copy_link"
+        android:title="Copy Link" />
+    <item
+        android:id="@+id/menu_share"
+        android:title="Share" />
+</menu>
