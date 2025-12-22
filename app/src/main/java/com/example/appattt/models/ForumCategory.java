@@ -1,7 +1,5 @@
 package com.example.appattt.models;
 
-import java.util.Date;
-
 public class ForumCategory {
     private String id;
     private String name;
@@ -9,8 +7,9 @@ public class ForumCategory {
     private String icon;
     private int topicCount;
     private int postCount;
-    private Date createdAt;
     private int order;
+    private boolean isLocked;
+    private long lastPostTime;
 
     // Constructors
     public ForumCategory() {}
@@ -23,7 +22,6 @@ public class ForumCategory {
         this.icon = icon;
         this.topicCount = topicCount;
         this.postCount = postCount;
-        this.createdAt = new Date();
     }
 
     // Getters and Setters
@@ -45,9 +43,12 @@ public class ForumCategory {
     public int getPostCount() { return postCount; }
     public void setPostCount(int postCount) { this.postCount = postCount; }
 
-    public Date getCreatedAt() { return createdAt; }
-    public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
-
     public int getOrder() { return order; }
     public void setOrder(int order) { this.order = order; }
+
+    public boolean isLocked() { return isLocked; }
+    public void setLocked(boolean locked) { isLocked = locked; }
+
+    public long getLastPostTime() { return lastPostTime; }
+    public void setLastPostTime(long lastPostTime) { this.lastPostTime = lastPostTime; }
 }

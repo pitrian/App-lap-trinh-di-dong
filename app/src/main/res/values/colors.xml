@@ -3,7 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="cyber_dark_background">#0A0A0A</color>
-    <color name="cyber_card_background">#1E1E1E</color>
     <color name="cyber_green_accent">#00FF88</color>
     <color name="cyber_text_primary">#FFFFFF</color>
     <color name="cyber_text_secondary">#B0B0B0</color>
@@ -28,7 +27,6 @@
     <color name="cyber_purple">#8B5CF6</color>
     <color name="cyber_blue">#3B82F6</color>
     <color name="cyber_red">#EF4444</color>
-    <color name="cyber_border">#2D3748</color>
     <color name="colorPrimary">#10B981</color>
     <color name="colorPrimaryDark">#059669</color>
     <color name="colorAccent">#10B981</color>
@@ -37,4 +35,10 @@
     <color name="red_light">#FFEBEE</color>
     <color name="green_light">#E8F5E9</color>
     <color name="blue_light">#E3F2FD</color>
+    <color name="cyber_card_background">#161A22</color>
+    <color name="cyber_green_neon">#00FF41</color>
+    <color name="cyber_blue_neon">#00D1FF</color>
+    <color name="cyber_border">#30363D</color>
+    <color name="cyber_text_dim">#8B949E</color>
+    <color name="cyber_dark_card">#161B22</color>
 </resources>

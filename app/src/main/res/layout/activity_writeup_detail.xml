@@ -1,23 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cyber_background">
+    android:background="@drawable/cyber_dark_background">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        app:elevation="0dp">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/cyber_card_background"
+            android:background="@color/cyber_dark_card"
             app:titleTextColor="@color/cyber_text_primary"
-            app:navigationIcon="@drawable/ic_back"
-            app:title="Write-up" />
+            app:navigationIcon="@drawable/arrow"
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -31,468 +32,362 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="20dp">
 
             <!-- Title -->
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Advanced SQL Injection Techniques"
+                android:text="Complete Guide: Linux Privilege Escalation"
                 android:textColor="@color/cyber_text_primary"
-                android:textSize="24sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
                 android:lineSpacingExtra="4dp"
                 android:layout_marginBottom="16dp" />
 
-            <!-- Author and Meta Info -->
+            <!-- Author & Meta Info -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
+                android:layout_marginBottom="12dp">
 
-                <ImageView
-                    android:id="@+id/ivAuthorAvatar"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_avatar_placeholder"
-                    android:layout_marginEnd="12dp" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:id="@+id/tvAuthor"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:text="L33tHacker"
+                    android:textColor="@color/cyber_text_primary"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/tvAuthor"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="SecurityExpert"
-                        android:textColor="@color/cyber_green_main"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvMetaInfo"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Level 42 • 2 days ago • 15 min read"
-                        android:textColor="@color/cyber_text_secondary"
-                        android:textSize="12sp" />
-
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/ivVerified"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_verified"
-                    android:tint="@color/cyber_green_main"
-                    android:layout_marginEnd="4dp"
-                    android:visibility="visible" />
-
-                <ImageView
-                    android:id="@+id/ivFeatured"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_star"
-                    android:tint="@color/cyber_orange_premium"
-                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/tvMetaInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Level 42 • 2 days ago • 8 min read"
+                    android:textColor="@color/cyber_text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginStart="12dp" />
 
             </LinearLayout>
 
-            <!-- Room and Difficulty -->
+            <!-- Room & Difficulty Chips -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
                 android:layout_marginBottom="16dp">
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipRoom"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Web Security Room"
-                    android:textColor="@color/cyber_green_main"
+                    android:text="Linux Fundamentals"
+                    android:textColor="@color/cyber_text_primary"
                     app:chipBackgroundColor="@color/cyber_card_background"
                     app:chipStrokeColor="@color/cyber_green_main"
-                    app:chipStrokeWidth="1dp"
-                    app:closeIconVisible="false"
-                    android:clickable="true"
-                    android:focusable="true" />
+                    app:chipStrokeWidth="1dp" />
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chipDifficulty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Advanced"
-                    android:textColor="@color/cyber_red"
-                    app:chipBackgroundColor="@drawable/bg_difficulty_advanced"
-                    app:closeIconVisible="false" />
+                    android:text="Intermediate"
+                    android:textColor="@color/cyber_text_primary"
+                    app:chipBackgroundColor="@color/cyber_orange_premium"
+                    app:chipStrokeWidth="0dp"
+                    android:layout_marginStart="8dp" />
 
-                <View
+                <!-- Verified Badge -->
+                <ImageView
+                    android:id="@+id/ivVerified"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_verified"
+                    app:tint="@color/cyber_green_main"
+                    android:layout_marginStart="8dp"
+                    android:visibility="gone" />
+
+                <!-- Featured Badge -->
+                <ImageView
+                    android:id="@+id/ivFeatured"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_star"
+                    app:tint="@color/cyber_orange_premium"
+                    android:layout_marginStart="4dp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
+            <!-- Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
 
-                <TextView
-                    android:id="@+id/tvViews"
-                    android:layout_width="wrap_content"
+                    <TextView
+                        android:id="@+id/tvLikes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="342"
+                        android:textColor="@color/cyber_text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Likes"
+                        android:textColor="@color/cyber_text_secondary"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="1.2K views"
-                    android:textColor="@color/cyber_text_secondary"
-                    android:textSize="12sp" />
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvComments"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="63"
+                        android:textColor="@color/cyber_text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Comments"
+                        android:textColor="@color/cyber_text_secondary"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvShares"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="28"
+                        android:textColor="@color/cyber_text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Shares"
+                        android:textColor="@color/cyber_text_secondary"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center">
+
+                    <TextView
+                        android:id="@+id/tvViews"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2.8K"
+                        android:textColor="@color/cyber_text_primary"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Views"
+                        android:textColor="@color/cyber_text_secondary"
+                        android:textSize="10sp" />
+
+                </LinearLayout>
 
             </LinearLayout>
 
             <!-- Tags -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TAGS"
+                android:textColor="@color/cyber_green_main"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2"
+                android:layout_marginBottom="8dp" />
+
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chipGroupTags"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:chipSpacingHorizontal="4dp"
-                app:chipSpacingVertical="4dp"
-                app:singleLine="false">
+                app:singleLine="false"
+                android:layout_marginBottom="20dp" />
 
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="#SQLInjection"
-                    android:textColor="@color/cyber_text_secondary"
-                    app:chipBackgroundColor="@color/cyber_card_background"
-                    app:closeIconVisible="false" />
-
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="#WebSecurity"
-                    android:textColor="@color/cyber_text_secondary"
-                    app:chipBackgroundColor="@color/cyber_card_background"
-                    app:closeIconVisible="false" />
-
-                <com.google.android.material.chip.Chip
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="#Database"
-                    android:textColor="@color/cyber_text_secondary"
-                    app:chipBackgroundColor="@color/cyber_card_background"
-                    app:closeIconVisible="false" />
-
-            </com.google.android.material.chip.ChipGroup>
-
-            <!-- Stats Bar -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
+            <!-- Content Header -->
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/cyber_border"
-                app:strokeWidth="1dp">
+                android:text="CONTENT"
+                android:textColor="@color/cyber_green_main"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:letterSpacing="0.2"
+                android:layout_marginBottom="12dp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/tvLikes"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="142"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Likes"
-                            android:textColor="@color/cyber_text_secondary"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="24dp"
-                        android:background="@color/cyber_border" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/tvComments"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="24"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Comments"
-                            android:textColor="@color/cyber_text_secondary"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="24dp"
-                        android:background="@color/cyber_border" />
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
-
-                        <TextView
-                            android:id="@+id/tvShares"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="8"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Shares"
-                            android:textColor="@color/cyber_text_secondary"
-                            android:textSize="12sp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
+            <!-- WebView for Content -->
+            <WebView
+                android:id="@+id/webViewContent"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:background="@color/cyber_dark_card"
+                android:padding="16dp"
+                android:layout_marginBottom="24dp" />
 
             <!-- Action Buttons -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="32dp">
+                android:layout_marginBottom="24dp">
 
                 <Button
                     android:id="@+id/btnLike"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:text="Like"
-                    android:textColor="@color/cyber_text_secondary"
-                    app:icon="@drawable/ic_like_outline"
-                    app:iconTint="@color/cyber_text_secondary"
-                    app:iconPadding="4dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="LIKE"
+                    android:textColor="@color/cyber_text_primary"
+                    android:backgroundTint="@color/cyber_card_background"
+                    android:drawableStart="@drawable/ic_like_outline"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/cyber_text_secondary"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginEnd="8dp" />
 
                 <Button
                     android:id="@+id/btnBookmark"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:text="Save"
-                    android:textColor="@color/cyber_text_secondary"
-                    app:icon="@drawable/ic_bookmark_outline"
-                    app:iconTint="@color/cyber_text_secondary"
-                    app:iconPadding="4dp"
-                    android:layout_marginStart="16dp" />
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="SAVE"
+                    android:textColor="@color/cyber_text_primary"
+                    android:backgroundTint="@color/cyber_card_background"
+                    android:drawableStart="@drawable/ic_bookmark_outline"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/cyber_text_secondary"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_marginEnd="8dp" />
 
                 <Button
                     android:id="@+id/btnShare"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:text="Share"
-                    android:textColor="@color/cyber_text_secondary"
-                    app:icon="@drawable/ic_share"
-                    app:iconTint="@color/cyber_text_secondary"
-                    app:iconPadding="4dp"
-                    android:layout_marginStart="16dp" />
-
-                <View
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1" />
-
-                <Button
-                    android:id="@+id/btnFollow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="36dp"
-                    android:text="Follow"
-                    android:textColor="@color/cyber_green_main"
-                    app:backgroundTint="@color/cyber_card_background"
-                    app:cornerRadius="8dp"
-                    app:strokeColor="@color/cyber_green_main"
-                    app:strokeWidth="1dp" />
+                    android:layout_height="40dp"
+                    android:layout_weight="1"
+                    android:text="SHARE"
+                    android:textColor="@color/cyber_text_primary"
+                    android:backgroundTint="@color/cyber_card_background"
+                    android:drawableStart="@drawable/ic_share"
+                    android:drawablePadding="8dp"
+                    android:drawableTint="@color/cyber_text_secondary"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
             </LinearLayout>
 
-            <!-- Content -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📝 Content"
-                android:textColor="@color/cyber_text_primary"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
-
-            <WebView
-                android:id="@+id/webViewContent"
+            <!-- Follow Author Button -->
+            <Button
+                android:id="@+id/btnFollow"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="400dp"
+                android:layout_height="40dp"
+                android:text="Follow Author"
+                android:textColor="@color/cyber_text_primary"
+                android:backgroundTint="@color/cyber_green_main"
+                android:drawableStart="@drawable/ic_person_add"
+                android:drawablePadding="8dp"
+                android:drawableTint="@color/cyber_text_primary"
+                style="@style/Widget.MaterialComponents.Button"
                 android:layout_marginBottom="32dp" />
 
-            <!-- Comments Section -->
+            <!-- Comments Section Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical"
                 android:layout_marginBottom="16dp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="💬 Comments"
-                    android:textColor="@color/cyber_text_primary"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
+                    android:text="COMMENTS"
+                    android:textColor="@color/cyber_green_main"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.2" />
 
                 <TextView
                     android:id="@+id/tvCommentCount"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="24 comments"
+                    android:text="63 comments"
                     android:textColor="@color/cyber_text_secondary"
-                    android:textSize="14sp" />
+                    android:textSize="12sp" />
 
             </LinearLayout>
-
-            <!-- Comment Input -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/cyber_border"
-                app:strokeWidth="1dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <EditText
-                        android:id="@+id/etComment"
-                        android:layout_width="match_parent"
-                        android:layout_height="80dp"
-                        android:hint="Add a comment..."
-                        android:textColor="@color/cyber_text_primary"
-                        android:textColorHint="@color/cyber_text_secondary"
-                        android:background="@null"
-                        android:gravity="top"
-                        android:inputType="textMultiLine"
-                        android:maxLines="4"
-                        android:padding="12dp" />
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="end"
-                        android:layout_marginTop="8dp">
-
-                        <Button
-                            android:id="@+id/btnCancelComment"
-                            style="@style/Widget.MaterialComponents.Button.TextButton"
-                            android:layout_width="wrap_content"
-                            android:layout_height="36dp"
-                            android:text="Cancel"
-                            android:textColor="@color/cyber_text_secondary" />
-
-                        <Button
-                            android:id="@+id/btnPostComment"
-                            android:layout_width="wrap_content"
-                            android:layout_height="36dp"
-                            android:text="Post"
-                            android:textColor="@color/cyber_green_main"
-                            app:backgroundTint="@color/cyber_card_background"
-                            app:cornerRadius="8dp"
-                            app:strokeColor="@color/cyber_green_main"
-                            app:strokeWidth="1dp"
-                            android:layout_marginStart="8dp" />
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </com.google.android.material.card.MaterialCardView>
 
             <!-- Comments List -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvComments"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="100dp" />
+                android:layout_marginBottom="24dp" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="24dp"
-                android:visibility="gone" />
-
-            <!-- Empty Comments -->
+            <!-- No Comments State -->
             <LinearLayout
                 android:id="@+id/layoutNoComments"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="200dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:padding="48dp"
+                android:padding="32dp"
                 android:visibility="gone">
 
                 <ImageView
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:src="@drawable/ic_comment_empty"
+                    android:src="@drawable/ic_comment"
                     android:tint="@color/cyber_text_secondary"
                     android:layout_marginBottom="16dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No comments yet"
+                    android:text="No Comments Yet"
                     android:textColor="@color/cyber_text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -501,18 +396,26 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Be the first to share your thoughts!"
+                    android:text="Be the first to comment on this write-up"
                     android:textColor="@color/cyber_text_secondary"
                     android:textSize="14sp"
                     android:textAlignment="center" />
 
             </LinearLayout>
 
-        </LinearLayout>
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="16dp"
+                android:indeterminateTint="@color/cyber_green_main" />
 
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Comment FAB -->
+    <!-- Floating Action Button for Comment -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabComment"
         android:layout_width="wrap_content"
@@ -520,6 +423,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="24dp"
         android:src="@drawable/ic_comment"
-        app:backgroundTint="@color/cyber_green_main" />
+        app:backgroundTint="@color/cyber_green_main"
+        app:tint="@color/cyber_text_primary"
+        app:elevation="8dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

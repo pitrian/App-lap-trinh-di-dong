@@ -16,6 +16,7 @@ import com.example.appattt.R;
 import com.example.appattt.models.ForumThread;
 import com.example.appattt.utils.DateUtils;
 
+import java.util.Date;
 import java.util.List;
 
 public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder> {
@@ -24,10 +25,13 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     private List<ForumThread> threadList;
     private OnItemClickListener listener;
 
+    // Interface để xử lý sự kiện click
     public interface OnItemClickListener {
         void onItemClick(ForumThread thread);
         void onAuthorClick(String authorId);
         void onCategoryClick(String categoryId);
+
+        void onUpvoteClick(ForumThread thread, int position);
     }
 
     public ThreadAdapter(Context context, List<ForumThread> threadList) {
@@ -62,7 +66,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         holder.tvReplies.setText(String.valueOf(thread.getReplyCount()));
         holder.tvViews.setText(String.valueOf(thread.getViews()));
         holder.tvUpvotes.setText(String.valueOf(thread.getUpvotes()));
-        holder.tvTime.setText(DateUtils.getTimeAgo(thread.getCreatedAt()));
+        holder.tvTime.setText(DateUtils.getTimeAgo(new Date(thread.getCreatedAt())));
 
         // Set solved badge
         if (thread.isSolved()) {
@@ -104,6 +108,8 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         });
     }
 
+    // GHI CHÚ: Khối interface bị trùng lặp đã được xóa khỏi đây
+
     @Override
     public int getItemCount() {
         return threadList.size();
@@ -131,6 +137,10 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     }
 
     private String getCategoryColor(String categoryName) {
+        // Mặc định là màu xám nếu categoryName là null để tránh lỗi
+        if (categoryName == null) {
+            return "#757575"; // Grey
+        }
         switch (categoryName) {
             case "General Discussion":
                 return "#4CAF50"; // Green

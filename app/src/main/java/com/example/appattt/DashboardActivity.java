@@ -4,15 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.ImageView;
-import android.widget.Toast; // <-- Thêm import cho Toast
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat; // <-- Thêm import cho GravityCompat
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
-// Giả sử bạn đã có các Activity này, hãy import chúng
 import com.example.appattt.forum.ForumHomeActivity;
+import com.example.appattt.forum.WriteupsListActivity;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -48,19 +48,19 @@ public class DashboardActivity extends AppCompatActivity {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return true;
                 } else if (id == R.id.nav_forum) {
-
                     startActivity(new Intent(DashboardActivity.this, ForumHomeActivity.class));
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return true;
                 } else if (id == R.id.nav_writeup) {
-                    Toast.makeText(DashboardActivity.this, "Chức năng Writeup đang được phát triển!", Toast.LENGTH_SHORT).show();
+                    // SỬA TẠI ĐÂY: Thay Toast bằng startActivity để UI Write-ups có thể hiện lên [cite: 1436]
+                    startActivity(new Intent(DashboardActivity.this, WriteupsListActivity.class));
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return true;
                 } else if (id == R.id.nav_logout) {
                     doLogout();
                     return true;
                 }
-                
+
                 drawerLayout.closeDrawer(GravityCompat.START);
                 return true;
             }

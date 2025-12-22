@@ -139,6 +139,8 @@ public class WriteupDetailActivity extends AppCompatActivity
             @Override
             public void onMarkAsSolutionClick(ForumPost comment) {
                 // Not applicable for writeups
+                Toast.makeText(WriteupDetailActivity.this,
+                        "This feature is for forum threads only", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -452,10 +454,14 @@ public class WriteupDetailActivity extends AppCompatActivity
         forumService.togglePostUpvote(comment.getId(), new ForumFirebaseService.DataCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean upvoted) {
-                // Update UI
-                int newUpvotes = comment.getUpvotes() + (upvoted ? 1 : -1);
-                comment.setUpvotes(newUpvotes);
-                commentAdapter.notifyDataSetChanged();
+                // Find comment position
+                int position = commentList.indexOf(comment);
+                if (position != -1) {
+                    // Update comment
+                    int newUpvotes = comment.getUpvotes() + (upvoted ? 1 : -1);
+                    comment.setUpvotes(newUpvotes);
+                    commentAdapter.notifyItemChanged(position);
+                }
             }
 
             @Override
@@ -481,7 +487,7 @@ public class WriteupDetailActivity extends AppCompatActivity
         // Refresh comments
         loadComments();
 
-        // Update writeup comment count
+        // Update writeup comment count locally
         if (currentWriteup != null) {
             currentWriteup.setComments(currentWriteup.getComments() + 1);
             updateCommentCountUI();

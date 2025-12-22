@@ -1,50 +1,38 @@
 package com.example.appattt.services;
 
 import android.util.Log;
-
-import androidx.annotation.NonNull;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.example.appattt.models.ForumCategory;
+import com.example.appattt.models.ForumThread;
+import com.example.appattt.models.ForumPost;
+import com.example.appattt.models.Writeup;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.WriteBatch;
-
-import com.example.appattt.models.ForumCategory;
-import com.example.appattt.models.ForumThread;
-import com.example.appattt.models.ForumPost;
-import com.example.appattt.models.ForumUpvote;
-import com.example.appattt.models.Writeup;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ForumFirebaseService {
+
     private static final String TAG = "ForumFirebaseService";
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirebaseAuth auth = FirebaseAuth.getInstance();
 
     // Collection names
     private static final String COLLECTION_CATEGORIES = "forum_categories";
     private static final String COLLECTION_THREADS = "forum_threads";
     private static final String COLLECTION_POSTS = "forum_posts";
-    private static final String COLLECTION_UPVOTES = "forum_upvotes";
     private static final String COLLECTION_WRITEUPS = "writeups";
     private static final String COLLECTION_USERS = "users";
-
-    private FirebaseFirestore db;
-    private FirebaseAuth auth;
 
     public interface DataCallback<T> {
         void onSuccess(T result);
@@ -56,591 +44,7 @@ public class ForumFirebaseService {
         void onError(String error);
     }
 
-    public ForumFirebaseService() {
-        db = FirebaseFirestore.getInstance();
-        auth = FirebaseAuth.getInstance();
-    }
-
-    // =============== CATEGORY METHODS ===============
-
-    public void getAllCategories(DataCallback<List<ForumCategory>> callback) {
-        db.collection(COLLECTION_CATEGORIES)
-                .orderBy("order")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<ForumCategory> categories = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            ForumCategory category = doc.toObject(ForumCategory.class);
-                            category.setId(doc.getId());
-                            categories.add(category);
-                        }
-                        callback.onSuccess(categories);
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-    }
-
-    // =============== THREAD METHODS ===============
-
-    public void getThreadsByCategory(String categoryId, String sortBy, int limit,
-                                     DataCallback<List<ForumThread>> callback) {
-        Query query = db.collection(COLLECTION_THREADS)
-                .whereEqualTo("categoryId", categoryId);
-
-        // Apply sorting
-        switch (sortBy) {
-            case "newest":
-                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
-                break;
-            case "popular":
-                query = query.orderBy("upvotes", Query.Direction.DESCENDING);
-                break;
-            case "most_commented":
-                query = query.orderBy("replyCount", Query.Direction.DESCENDING);
-                break;
-            case "solved":
-                query = query.whereEqualTo("isSolved", true)
-                        .orderBy("createdAt", Query.Direction.DESCENDING);
-                break;
-            default:
-                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
-        }
-
-        // Apply limit
-        if (limit > 0) {
-            query = query.limit(limit);
-        }
-
-        query.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<ForumThread> threads = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    ForumThread thread = doc.toObject(ForumThread.class);
-                    thread.setId(doc.getId());
-                    threads.add(thread);
-                }
-                callback.onSuccess(threads);
-            } else {
-                callback.onError(task.getException().getMessage());
-            }
-        });
-    }
-
-    public void getThreadById(String threadId, DataCallback<ForumThread> callback) {
-        db.collection(COLLECTION_THREADS)
-                .document(threadId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot doc = task.getResult();
-                        if (doc.exists()) {
-                            ForumThread thread = doc.toObject(ForumThread.class);
-                            thread.setId(doc.getId());
-                            callback.onSuccess(thread);
-                        } else {
-                            callback.onError("Thread not found");
-                        }
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-    }
-
-    public void createThread(ForumThread thread, EmptyCallback callback) {
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser == null) {
-            callback.onError("User not authenticated");
-            return;
-        }
-
-        // Set author info
-        thread.setAuthorId(currentUser.getUid());
-        thread.setAuthorName(currentUser.getDisplayName() != null ?
-                currentUser.getDisplayName() : "Anonymous");
-
-        // Add to Firestore
-        db.collection(COLLECTION_THREADS)
-                .add(thread)
-                .addOnSuccessListener(documentReference -> {
-                    String threadId = documentReference.getId();
-
-                    // Update category count
-                    incrementCategoryCount(thread.getCategoryId(), "topicCount", 1);
-
-                    // Add initial view by author
-                    incrementThreadView(threadId);
-
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    callback.onError(e.getMessage());
-                });
-    }
-
-    public void incrementThreadView(String threadId) {
-        db.collection(COLLECTION_THREADS)
-                .document(threadId)
-                .update("views", FieldValue.increment(1))
-                .addOnFailureListener(e -> Log.e(TAG, "Error incrementing views", e));
-    }
-
-    public void toggleThreadUpvote(String threadId, DataCallback<Boolean> callback) {
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser == null) {
-            callback.onError("User not authenticated");
-            return;
-        }
-
-        String upvoteId = currentUser.getUid() + "_" + threadId;
-        DocumentReference upvoteRef = db.collection(COLLECTION_UPVOTES).document(upvoteId);
-
-        // Check if already upvoted
-        upvoteRef.get().addOnCompleteListener(checkTask -> {
-            if (checkTask.isSuccessful()) {
-                boolean hasUpvoted = checkTask.getResult().exists();
-
-                if (hasUpvoted) {
-                    // Remove upvote
-                    WriteBatch batch = db.batch();
-                    batch.delete(upvoteRef);
-                    batch.update(db.collection(COLLECTION_THREADS).document(threadId),
-                            "upvotes", FieldValue.increment(-1));
-
-                    batch.commit().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            callback.onSuccess(false); // Upvote removed
-                        } else {
-                            callback.onError(task.getException().getMessage());
-                        }
-                    });
-                } else {
-                    // Add upvote
-                    ForumUpvote upvote = new ForumUpvote(currentUser.getUid(), threadId, null);
-
-                    WriteBatch batch = db.batch();
-                    batch.set(upvoteRef, upvote);
-                    batch.update(db.collection(COLLECTION_THREADS).document(threadId),
-                            "upvotes", FieldValue.increment(1));
-
-                    batch.commit().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            callback.onSuccess(true); // Upvote added
-                        } else {
-                            callback.onError(task.getException().getMessage());
-                        }
-                    });
-                }
-            } else {
-                callback.onError(checkTask.getException().getMessage());
-            }
-        });
-    }
-
-    public void checkThreadUpvote(String threadId, DataCallback<Boolean> callback) {
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser == null) {
-            callback.onSuccess(false);
-            return;
-        }
-
-        String upvoteId = currentUser.getUid() + "_" + threadId;
-        db.collection(COLLECTION_UPVOTES)
-                .document(upvoteId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        callback.onSuccess(task.getResult().exists());
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-    }
-
-    public void markThreadAsSolved(String threadId, String solutionPostId, EmptyCallback callback) {
-        WriteBatch batch = db.batch();
-
-        // Mark thread as solved
-        batch.update(db.collection(COLLECTION_THREADS).document(threadId),
-                "isSolved", true);
-
-        // Mark post as answer
-        if (solutionPostId != null) {
-            batch.update(db.collection(COLLECTION_POSTS).document(solutionPostId),
-                    "isAnswer", true);
-        }
-
-        batch.commit().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                callback.onSuccess();
-            } else {
-                callback.onError(task.getException().getMessage());
-            }
-        });
-    }
-
-    // =============== POST/COMMENT METHODS ===============
-
-    public void getPostsByThread(String threadId, DataCallback<List<ForumPost>> callback) {
-        db.collection(COLLECTION_POSTS)
-                .whereEqualTo("threadId", threadId)
-                .whereEqualTo("parentPostId", null) // Only top-level comments
-                .orderBy("createdAt", Query.Direction.ASCENDING)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<ForumPost> posts = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            ForumPost post = doc.toObject(ForumPost.class);
-                            post.setId(doc.getId());
-                            posts.add(post);
-                        }
-                        callback.onSuccess(posts);
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-    }
-
-    public void getRepliesByPost(String postId, DataCallback<List<ForumPost>> callback) {
-        db.collection(COLLECTION_POSTS)
-                .whereEqualTo("parentPostId", postId)
-                .orderBy("createdAt", Query.Direction.ASCENDING)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<ForumPost> replies = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            ForumPost reply = doc.toObject(ForumPost.class);
-                            reply.setId(doc.getId());
-                            replies.add(reply);
-                        }
-                        callback.onSuccess(replies);
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-    }
-
-    public void createPost(ForumPost post, EmptyCallback callback) {
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser == null) {
-            callback.onError("User not authenticated");
-            return;
-        }
-
-        // Set author info
-        post.setAuthorId(currentUser.getUid());
-        post.setAuthorName(currentUser.getDisplayName() != null ?
-                currentUser.getDisplayName() : "Anonymous");
-
-        // --- Start of Transaction for atomicity ---
-        // First, get the categoryId from the thread.
-        getThreadCategoryId(post.getThreadId(), new DataCallback<String>() {
-            @Override
-            public void onSuccess(String categoryId) {
-                if (categoryId == null) {
-                    // If we can't find the category, we can't update its count.
-                    // Decide how to handle this. Maybe just commit the post creation.
-                    // For now, we'll proceed without the category update.
-                    WriteBatch batch = db.batch();
-                    DocumentReference postRef = db.collection(COLLECTION_POSTS).document();
-                    batch.set(postRef, post);
-                    batch.update(db.collection(COLLECTION_THREADS).document(post.getThreadId()),
-                            "replyCount", FieldValue.increment(1));
-
-                    batch.commit().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            callback.onSuccess();
-                        } else {
-                            callback.onError(task.getException().getMessage());
-                        }
-                    });
-                    return;
-                }
-
-                // Now that we have the categoryId, perform all writes in a single batch
-                WriteBatch batch = db.batch();
-
-                // 1. Add the new post
-                DocumentReference postRef = db.collection(COLLECTION_POSTS).document();
-                batch.set(postRef, post);
-
-                // 2. Increment thread reply count
-                batch.update(db.collection(COLLECTION_THREADS).document(post.getThreadId()),
-                        "replyCount", FieldValue.increment(1));
-
-                // 3. Increment category post count
-                batch.update(db.collection(COLLECTION_CATEGORIES).document(categoryId),
-                        "postCount", FieldValue.increment(1)); // Assuming COLLECTION_CATEGORIES
-
-                // Commit all operations together
-                batch.commit().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        callback.onSuccess();
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-            }
-
-            @Override
-            public void onError(String error) {
-                // Failed to get the thread details, so we can't proceed.
-                // Pass the error back to the original caller.
-                callback.onError("Failed to retrieve thread details: " + error);
-            }
-        });
-    }
-
-
-    public void togglePostUpvote(String postId, DataCallback<Boolean> callback) {
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser == null) {
-            callback.onError("User not authenticated");
-            return;
-        }
-
-        String upvoteId = currentUser.getUid() + "_" + postId;
-        DocumentReference upvoteRef = db.collection(COLLECTION_UPVOTES).document(upvoteId);
-
-        upvoteRef.get().addOnCompleteListener(checkTask -> {
-            if (checkTask.isSuccessful()) {
-                boolean hasUpvoted = checkTask.getResult().exists();
-
-                if (hasUpvoted) {
-                    // Remove upvote
-                    WriteBatch batch = db.batch();
-                    batch.delete(upvoteRef);
-                    batch.update(db.collection(COLLECTION_POSTS).document(postId),
-                            "upvotes", FieldValue.increment(-1));
-
-                    batch.commit().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            callback.onSuccess(false);
-                        } else {
-                            callback.onError(task.getException().getMessage());
-                        }
-                    });
-                } else {
-                    // Add upvote
-                    ForumUpvote upvote = new ForumUpvote(currentUser.getUid(), null, postId);
-
-                    WriteBatch batch = db.batch();
-                    batch.set(upvoteRef, upvote);
-                    batch.update(db.collection(COLLECTION_POSTS).document(postId),
-                            "upvotes", FieldValue.increment(1));
-
-                    batch.commit().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            callback.onSuccess(true);
-                        } else {
-                            callback.onError(task.getException().getMessage());
-                        }
-                    });
-                }
-            } else {
-                callback.onError(checkTask.getException().getMessage());
-            }
-        });
-    }
-
-    // =============== WRITEUP METHODS ===============
-
-    public void getAllWriteups(String sortBy, int limit, DataCallback<List<Writeup>> callback) {
-        Query query = db.collection(COLLECTION_WRITEUPS)
-                .whereEqualTo("isVerified", true);
-
-        switch (sortBy) {
-            case "recent":
-                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
-                break;
-            case "popular":
-                query = query.orderBy("likes", Query.Direction.DESCENDING);
-                break;
-            case "trending":
-                // Trending = high views recently
-                query = query.orderBy("views", Query.Direction.DESCENDING);
-                break;
-            default:
-                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
-        }
-
-        if (limit > 0) {
-            query = query.limit(limit);
-        }
-
-        query.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                List<Writeup> writeups = new ArrayList<>();
-                for (QueryDocumentSnapshot doc : task.getResult()) {
-                    Writeup writeup = doc.toObject(Writeup.class);
-                    writeup.setId(doc.getId());
-                    writeups.add(writeup);
-                }
-                callback.onSuccess(writeups);
-            } else {
-                callback.onError(task.getException().getMessage());
-            }
-        });
-    }
-
-    public void getWriteupById(String writeupId, DataCallback<Writeup> callback) {
-        db.collection(COLLECTION_WRITEUPS)
-                .document(writeupId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot doc = task.getResult();
-                        if (doc.exists()) {
-                            Writeup writeup = doc.toObject(Writeup.class);
-                            writeup.setId(doc.getId());
-
-                            // Increment view count
-                            incrementWriteupView(writeupId);
-
-                            callback.onSuccess(writeup);
-                        } else {
-                            callback.onError("Writeup not found");
-                        }
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-    }
-
-    public void createWriteup(Writeup writeup, EmptyCallback callback) {
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser == null) {
-            callback.onError("User not authenticated");
-            return;
-        }
-
-        writeup.setAuthorId(currentUser.getUid());
-        writeup.setAuthorName(currentUser.getDisplayName() != null ?
-                currentUser.getDisplayName() : "Anonymous");
-
-        db.collection(COLLECTION_WRITEUPS)
-                .add(writeup)
-                .addOnSuccessListener(documentReference -> {
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    callback.onError(e.getMessage());
-                });
-    }
-
-    public void toggleWriteupLike(String writeupId, DataCallback<Boolean> callback) {
-        FirebaseUser currentUser = auth.getCurrentUser();
-        if (currentUser == null) {
-            callback.onError("User not authenticated");
-            return;
-        }
-
-        String likeId = currentUser.getUid() + "_" + writeupId;
-        DocumentReference likeRef = db.collection("writeup_likes").document(likeId);
-
-        likeRef.get().addOnCompleteListener(checkTask -> {
-            if (checkTask.isSuccessful()) {
-                boolean hasLiked = checkTask.getResult().exists();
-
-                if (hasLiked) {
-                    // Remove like
-                    WriteBatch batch = db.batch();
-                    batch.delete(likeRef);
-                    batch.update(db.collection(COLLECTION_WRITEUPS).document(writeupId),
-                            "likes", FieldValue.increment(-1));
-
-                    batch.commit().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            callback.onSuccess(false);
-                        } else {
-                            callback.onError(task.getException().getMessage());
-                        }
-                    });
-                } else {
-                    // Add like
-                    Map<String, Object> like = new HashMap<>();
-                    like.put("userId", currentUser.getUid());
-                    like.put("writeupId", writeupId);
-                    like.put("createdAt", FieldValue.serverTimestamp());
-
-                    WriteBatch batch = db.batch();
-                    batch.set(likeRef, like);
-                    batch.update(db.collection(COLLECTION_WRITEUPS).document(writeupId),
-                            "likes", FieldValue.increment(1));
-
-                    batch.commit().addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            callback.onSuccess(true);
-                        } else {
-                            callback.onError(task.getException().getMessage());
-                        }
-                    });
-                }
-            } else {
-                callback.onError(checkTask.getException().getMessage());
-            }
-        });
-    }
-
-    // =============== SEARCH METHODS ===============
-
-
-
-    public void searchThreads(String query, DataCallback<List<ForumThread>> callback) {
-        db.collection(COLLECTION_THREADS)
-                .orderBy("title")
-                .startAt(query)
-                .endAt(query + "\uf8ff")
-                .limit(20)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<ForumThread> threads = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            ForumThread thread = doc.toObject(ForumThread.class);
-                            thread.setId(doc.getId());
-                            threads.add(thread);
-                        }
-                        callback.onSuccess(threads);
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-    }
-
-    // =============== HELPER METHODS ===============
-
-    private void incrementCategoryCount(String categoryId, String field, int value) {
-        db.collection(COLLECTION_CATEGORIES)
-                .document(categoryId)
-                .update(field, FieldValue.increment(value))
-                .addOnFailureListener(e -> Log.e(TAG, "Error updating category count", e));
-    }
-
-    private void incrementWriteupView(String writeupId) {
-        db.collection(COLLECTION_WRITEUPS)
-                .document(writeupId)
-                .update("views", FieldValue.increment(1))
-                .addOnFailureListener(e -> Log.e(TAG, "Error incrementing writeup views", e));
-    }
-
-    private void getThreadCategoryId(String threadId, DataCallback<String> callback) {
-        db.collection(COLLECTION_THREADS)
-                .document(threadId)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult().exists()) {
-                        String categoryId = task.getResult().getString("categoryId");
-                        callback.onSuccess(categoryId);
-                    } else {
-                        callback.onSuccess(null);
-                    }
-                });
-    }
-
+    // ========== USER ==========
     public boolean isUserAuthenticated() {
         return auth.getCurrentUser() != null;
     }
@@ -652,53 +56,644 @@ public class ForumFirebaseService {
 
     public String getCurrentUserName() {
         FirebaseUser user = auth.getCurrentUser();
-        return user != null ?
-                (user.getDisplayName() != null ? user.getDisplayName() : "Anonymous") :
-                "Anonymous";
+        if (user != null) {
+            String displayName = user.getDisplayName();
+            if (displayName != null && !displayName.isEmpty()) {
+                return displayName;
+            }
+            String email = user.getEmail();
+            if (email != null) {
+                return email.split("@")[0];
+            }
+        }
+        return "Anonymous";
     }
 
+    // ========== CATEGORIES ==========
+    public void getAllCategories(DataCallback<List<ForumCategory>> callback) {
+        db.collection(COLLECTION_CATEGORIES)
+                .orderBy("order")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<ForumCategory> categories = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            ForumCategory category = document.toObject(ForumCategory.class);
+                            if (category != null) {
+                                category.setId(document.getId());
+                                categories.add(category);
+                            }
+                        }
+                        callback.onSuccess(categories);
+                    } else {
+                        Log.e(TAG, "Error getting categories: ", task.getException());
+                        callback.onError(task.getException() != null ?
+                                task.getException().getMessage() : "Unknown error");
+                    }
+                });
+    }
+
+    public void getCategoryById(String categoryId, DataCallback<ForumCategory> callback) {
+        db.collection(COLLECTION_CATEGORIES)
+                .document(categoryId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        ForumCategory category = task.getResult().toObject(ForumCategory.class);
+                        if (category != null) {
+                            category.setId(task.getResult().getId());
+                        }
+                        callback.onSuccess(category);
+                    } else {
+                        callback.onError("Category not found");
+                    }
+                });
+    }
+
+    // ========== THREADS ==========
 
 
-    // Lấy tổng số threads
-    public void getTotalThreadCount(DataCallback<Integer> callback) {
+    public void getThreadById(String threadId, DataCallback<ForumThread> callback) {
         db.collection(COLLECTION_THREADS)
+                .document(threadId)
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        callback.onSuccess(task.getResult().size());
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        ForumThread thread = task.getResult().toObject(ForumThread.class);
+                        if (thread != null) {
+                            thread.setId(task.getResult().getId());
+                            callback.onSuccess(thread);
+                        } else {
+                            callback.onError("Thread data is null");
+                        }
                     } else {
-                        callback.onError(task.getException().getMessage());
+                        callback.onError("Thread not found");
                     }
                 });
     }
 
-    // Lấy số active users (users online trong 24h)
-    public void getActiveUsersCount(DataCallback<Integer> callback) {
-        // Đây là logic đơn giản, trong thực tế cần track user activity
-        db.collection(COLLECTION_USERS)
-                .limit(100) // Giới hạn để test
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        callback.onSuccess(task.getResult().size());
-                    } else {
-                        callback.onError(task.getException().getMessage());
-                    }
-                });
-    }
-
-    // Lấy hot threads (most upvoted/commented)
     public void getHotThreads(int limit, DataCallback<List<ForumThread>> callback) {
         db.collection(COLLECTION_THREADS)
-                .orderBy("upvotes", Query.Direction.DESCENDING)
+                .whereEqualTo("isHot", true)
+                .orderBy("lastActivity", Query.Direction.DESCENDING)
                 .limit(limit)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<ForumThread> threads = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : task.getResult()) {
-                            ForumThread thread = doc.toObject(ForumThread.class);
-                            thread.setId(doc.getId());
+                        for (DocumentSnapshot document : task.getResult()) {
+                            ForumThread thread = document.toObject(ForumThread.class);
+                            if (thread != null) {
+                                thread.setId(document.getId());
+                                threads.add(thread);
+                            }
+                        }
+                        callback.onSuccess(threads);
+                    } else {
+                        callback.onError(task.getException() != null ?
+                                task.getException().getMessage() : "Error loading threads");
+                    }
+                });
+    }
+
+
+    public void incrementThreadView(String threadId) {
+        db.collection(COLLECTION_THREADS)
+                .document(threadId)
+                .update("views", FieldValue.increment(1))
+                .addOnFailureListener(e -> Log.e(TAG, "Error incrementing view: ", e));
+    }
+
+    public void toggleThreadUpvote(String threadId, DataCallback<Boolean> callback) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        db.collection(COLLECTION_THREADS)
+                .document(threadId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot doc = task.getResult();
+                        List<String> upvotedBy = (List<String>) doc.get("upvotedBy");
+                        if (upvotedBy == null) upvotedBy = new ArrayList<>();
+
+                        boolean isUpvoted = upvotedBy.contains(userId);
+                        if (isUpvoted) {
+                            // Remove upvote
+                            upvotedBy.remove(userId);
+                            db.collection(COLLECTION_THREADS)
+                                    .document(threadId)
+                                    .update(
+                                            "upvotes", FieldValue.increment(-1),
+                                            "upvotedBy", upvotedBy
+                                    )
+                                    .addOnSuccessListener(aVoid -> callback.onSuccess(false))
+                                    .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                        } else {
+                            // Add upvote
+                            upvotedBy.add(userId);
+                            db.collection(COLLECTION_THREADS)
+                                    .document(threadId)
+                                    .update(
+                                            "upvotes", FieldValue.increment(1),
+                                            "upvotedBy", upvotedBy
+                                    )
+                                    .addOnSuccessListener(aVoid -> callback.onSuccess(true))
+                                    .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                        }
+                    } else {
+                        callback.onError("Thread not found");
+                    }
+                });
+    }
+
+    public void checkThreadUpvote(String threadId, DataCallback<Boolean> callback) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            callback.onSuccess(false);
+            return;
+        }
+
+        db.collection(COLLECTION_THREADS)
+                .document(threadId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<String> upvotedBy = (List<String>) task.getResult().get("upvotedBy");
+                        callback.onSuccess(upvotedBy != null && upvotedBy.contains(userId));
+                    } else {
+                        callback.onSuccess(false);
+                    }
+                });
+    }
+
+
+    public void getPostsByThread(String threadId, DataCallback<List<ForumPost>> callback) {
+        db.collection(COLLECTION_POSTS)
+                .whereEqualTo("threadId", threadId)
+                .orderBy("createdAt", Query.Direction.ASCENDING)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<ForumPost> posts = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            ForumPost post = document.toObject(ForumPost.class);
+                            if (post != null) {
+                                post.setId(document.getId());
+                                posts.add(post);
+                            }
+                        }
+                        callback.onSuccess(posts);
+                    } else {
+                        callback.onError("Error loading posts");
+                    }
+                });
+    }
+
+    // ========== WRITEUPS ==========
+    // Trong class ForumFirebaseService
+    public void createWriteup(Writeup writeup, EmptyCallback callback) {
+        Map<String, Object> writeupData = new HashMap<>();
+        writeupData.put("title", writeup.getTitle());
+        writeupData.put("content", writeup.getContent());
+        writeupData.put("authorId", writeup.getAuthorId());
+        writeupData.put("authorName", writeup.getAuthorName());
+        writeupData.put("roomId", writeup.getRoomId());
+        writeupData.put("roomName", writeup.getRoomName());
+        writeupData.put("difficulty", writeup.getDifficulty());
+        writeupData.put("tags", writeup.getTags());
+        writeupData.put("likes", 0);
+        writeupData.put("views", 0);
+        writeupData.put("comments", 0); // Thêm comments field
+        writeupData.put("verified", false); // Thêm verified field
+        writeupData.put("isFeatured", false);
+        writeupData.put("createdAt", new Date());
+
+        db.collection(COLLECTION_WRITEUPS)
+                .add(writeupData)
+                .addOnSuccessListener(documentReference -> {
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error creating writeup: ", e);
+                    callback.onError(e.getMessage());
+                });
+    }
+
+    public void createPost(ForumPost post, EmptyCallback callback) {
+        Map<String, Object> postData = new HashMap<>();
+        postData.put("threadId", post.getThreadId());
+        postData.put("content", post.getContent());
+        postData.put("authorId", post.getAuthorId());
+        postData.put("authorName", post.getAuthorName());
+        postData.put("parentId", post.getParentId());
+        postData.put("upvotes", 0);
+        postData.put("isSolution", false); // Dùng isSolution thay vì isAnswer
+        postData.put("depth", post.getDepth()); // Thêm depth field
+        postData.put("createdAt", new Date());
+
+        db.collection(COLLECTION_POSTS)
+                .add(postData)
+                .addOnSuccessListener(documentReference -> {
+                    // Update thread reply count
+                    updateThreadReplyCount(post.getThreadId(), 1);
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error creating post: ", e);
+                    callback.onError(e.getMessage());
+                });
+    }
+
+    public void getAllWriteups(String filter, int limit, DataCallback<List<Writeup>> callback) {
+        Query query = db.collection(COLLECTION_WRITEUPS)
+                .orderBy("createdAt", Query.Direction.DESCENDING);
+
+        if (limit > 0) {
+            query = query.limit(limit);
+        }
+
+        query.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<Writeup> writeups = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            Writeup writeup = document.toObject(Writeup.class);
+                            if (writeup != null) {
+                                writeup.setId(document.getId());
+                                writeups.add(writeup);
+                            }
+                        }
+                        callback.onSuccess(writeups);
+                    } else {
+                        callback.onError("Error loading writeups");
+                    }
+                });
+    }
+
+    public void toggleWriteupLike(String writeupId, DataCallback<Boolean> callback) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        db.collection(COLLECTION_WRITEUPS)
+                .document(writeupId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot doc = task.getResult();
+                        List<String> likedBy = (List<String>) doc.get("likedBy");
+                        if (likedBy == null) likedBy = new ArrayList<>();
+
+                        boolean isLiked = likedBy.contains(userId);
+                        if (isLiked) {
+                            // Remove like
+                            likedBy.remove(userId);
+                            db.collection(COLLECTION_WRITEUPS)
+                                    .document(writeupId)
+                                    .update(
+                                            "likes", FieldValue.increment(-1),
+                                            "likedBy", likedBy
+                                    )
+                                    .addOnSuccessListener(aVoid -> callback.onSuccess(false))
+                                    .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                        } else {
+                            // Add like
+                            likedBy.add(userId);
+                            db.collection(COLLECTION_WRITEUPS)
+                                    .document(writeupId)
+                                    .update(
+                                            "likes", FieldValue.increment(1),
+                                            "likedBy", likedBy
+                                    )
+                                    .addOnSuccessListener(aVoid -> callback.onSuccess(true))
+                                    .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                        }
+                    } else {
+                        callback.onError("Writeup not found");
+                    }
+                });
+    }
+
+    public void searchThreads(String query, DataCallback<List<ForumThread>> callback) {
+        db.collection(COLLECTION_THREADS)
+                .orderBy("title")
+                .startAt(query)
+                .endAt(query + "\uf8ff")
+                .limit(50)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<ForumThread> threads = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            ForumThread thread = document.toObject(ForumThread.class);
+                            if (thread != null) {
+                                thread.setId(document.getId());
+                                threads.add(thread);
+                            }
+                        }
+                        callback.onSuccess(threads);
+                    } else {
+                        callback.onError("Search failed: " + task.getException().getMessage());
+                    }
+                });
+    }
+
+
+
+    // Thêm vào ForumFirebaseService.java
+
+    public void getThreadsByCategory(String categoryId, String filter, int limit, DataCallback<List<ForumThread>> callback) {
+        Query query = db.collection(COLLECTION_THREADS);
+
+        // Filter by category
+        if (categoryId != null && !categoryId.isEmpty()) {
+            query = query.whereEqualTo("categoryId", categoryId);
+        }
+
+        // Apply sorting based on filter
+        switch (filter.toLowerCase()) {
+            case "newest":
+                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
+                break;
+            case "hot":
+                query = query.orderBy("lastActivity", Query.Direction.DESCENDING);
+                break;
+            case "most_viewed":
+                query = query.orderBy("views", Query.Direction.DESCENDING);
+                break;
+            case "most_upvoted":
+                query = query.orderBy("upvotes", Query.Direction.DESCENDING);
+                break;
+            default:
+                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
+        }
+
+        // Apply limit if specified
+        if (limit > 0) {
+            query = query.limit(limit);
+        }
+
+        query.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<ForumThread> threads = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            ForumThread thread = document.toObject(ForumThread.class);
+                            if (thread != null) {
+                                thread.setId(document.getId());
+                                threads.add(thread);
+                            }
+                        }
+                        callback.onSuccess(threads);
+                    } else {
+                        callback.onError("Error loading threads");
+                    }
+                });
+    }
+
+    // Giữ phương thức cũ để tương thích
+    public void getThreadsByCategory(String categoryId, DataCallback<List<ForumThread>> callback) {
+        getThreadsByCategory(categoryId, "newest", 0, callback);
+    }
+
+    // Thêm phương thức get user threads
+    public void getThreadsByUser(String userId, String filter, DataCallback<List<ForumThread>> callback) {
+        Query query = db.collection(COLLECTION_THREADS)
+                .whereEqualTo("authorId", userId);
+
+        switch (filter.toLowerCase()) {
+            case "newest":
+                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
+                break;
+            case "most_viewed":
+                query = query.orderBy("views", Query.Direction.DESCENDING);
+                break;
+            default:
+                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
+        }
+
+        query.get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<ForumThread> threads = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            ForumThread thread = document.toObject(ForumThread.class);
+                            if (thread != null) {
+                                thread.setId(document.getId());
+                                threads.add(thread);
+                            }
+                        }
+                        callback.onSuccess(threads);
+                    } else {
+                        callback.onError("Error loading user threads");
+                    }
+                });
+    }
+
+    // Thêm phương thức get recent threads
+    public void getRecentThreads(int days, DataCallback<List<ForumThread>> callback) {
+        long cutoffTime = System.currentTimeMillis() - (days * 24 * 60 * 60 * 1000L);
+        Date cutoffDate = new Date(cutoffTime);
+
+        db.collection(COLLECTION_THREADS)
+                .whereGreaterThan("createdAt", cutoffDate)
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<ForumThread> threads = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            ForumThread thread = document.toObject(ForumThread.class);
+                            if (thread != null) {
+                                thread.setId(document.getId());
+                                threads.add(thread);
+                            }
+                        }
+                        callback.onSuccess(threads);
+                    } else {
+                        callback.onError("Error loading recent threads");
+                    }
+                });
+    }
+
+    public void getForumStats(DataCallback<Map<String, Object>> callback) {
+        db.collection("forum_stats").document("overall")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
+                        Map<String, Object> stats = task.getResult().getData();
+                        callback.onSuccess(stats);
+                    } else {
+                        // Fallback to sample data
+                        Map<String, Object> stats = new HashMap<>();
+                        stats.put("totalThreads", 1250);
+                        stats.put("activeUsers", 342);
+                        stats.put("totalPosts", 8921);
+                        callback.onSuccess(stats);
+                    }
+                });
+    }
+
+    // ========== PRIVATE HELPER METHODS ==========
+    private void updateCategoryStats(String categoryId, int threadIncrement, int postIncrement) {
+        if (categoryId == null || categoryId.isEmpty()) return;
+
+        Map<String, Object> updates = new HashMap<>();
+        if (threadIncrement != 0) {
+            updates.put("topicCount", FieldValue.increment(threadIncrement));
+        }
+        if (postIncrement != 0) {
+            updates.put("postCount", FieldValue.increment(postIncrement));
+        }
+
+        if (!updates.isEmpty()) {
+            db.collection(COLLECTION_CATEGORIES)
+                    .document(categoryId)
+                    .update(updates)
+                    .addOnFailureListener(e ->
+                            Log.e(TAG, "Error updating category stats: ", e));
+        }
+    }
+
+    public void getWriteupById(String writeupId, DataCallback<Writeup> callback) {
+        if (writeupId == null || writeupId.isEmpty()) {
+            callback.onError("Writeup ID is empty");
+            return;
+        }
+
+        db.collection(COLLECTION_WRITEUPS)
+                .document(writeupId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Writeup writeup = document.toObject(Writeup.class);
+                            if (writeup != null) {
+                                writeup.setId(document.getId());
+                                callback.onSuccess(writeup);
+                            } else {
+                                callback.onError("Failed to parse writeup data");
+                            }
+                        } else {
+                            callback.onError("Writeup not found");
+                        }
+                    } else {
+                        callback.onError(task.getException() != null ? task.getException().getMessage() : "Unknown error");
+                    }
+                });
+    }
+
+
+    public void getWriteupComments(String writeupId, DataCallback<List<ForumPost>> callback) {
+        db.collection(COLLECTION_POSTS)
+                .whereEqualTo("writeupId", writeupId)  // Giả sử có trường writeupId trong forum post
+                .orderBy("createdAt", Query.Direction.ASCENDING)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<ForumPost> posts = new ArrayList<>();
+                        for (DocumentSnapshot document : task.getResult()) {
+                            ForumPost post = document.toObject(ForumPost.class);
+                            if (post != null) {
+                                post.setId(document.getId());
+                                posts.add(post);
+                            }
+                        }
+                        callback.onSuccess(posts);
+                    } else {
+                        callback.onError("Error loading writeup comments");
+                    }
+                });
+    }
+
+    // Thêm vào ForumFirebaseService.java
+
+    // ========== POST UPVOTE ==========
+    public void togglePostUpvote(String postId, DataCallback<Boolean> callback) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            callback.onError("User not authenticated");
+            return;
+        }
+
+        db.collection(COLLECTION_POSTS)
+                .document(postId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        DocumentSnapshot doc = task.getResult();
+                        List<String> upvotedBy = (List<String>) doc.get("upvotedBy");
+                        if (upvotedBy == null) upvotedBy = new ArrayList<>();
+
+                        boolean isUpvoted = upvotedBy.contains(userId);
+                        if (isUpvoted) {
+                            // Remove upvote
+                            upvotedBy.remove(userId);
+                            db.collection(COLLECTION_POSTS)
+                                    .document(postId)
+                                    .update(
+                                            "upvotes", FieldValue.increment(-1),
+                                            "upvotedBy", upvotedBy
+                                    )
+                                    .addOnSuccessListener(aVoid -> callback.onSuccess(false))
+                                    .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                        } else {
+                            // Add upvote
+                            upvotedBy.add(userId);
+                            db.collection(COLLECTION_POSTS)
+                                    .document(postId)
+                                    .update(
+                                            "upvotes", FieldValue.increment(1),
+                                            "upvotedBy", upvotedBy
+                                    )
+                                    .addOnSuccessListener(aVoid -> callback.onSuccess(true))
+                                    .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                        }
+                    } else {
+                        callback.onError("Post not found");
+                    }
+                });
+    }
+
+    // Thêm phương thức check if post is upvoted by current user
+    public void checkPostUpvote(String postId, DataCallback<Boolean> callback) {
+        String userId = getCurrentUserId();
+        if (userId == null) {
+            callback.onSuccess(false);
+            return;
+        }
+
+        db.collection(COLLECTION_POSTS)
+                .document(postId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        List<String> upvotedBy = (List<String>) task.getResult().get("upvotedBy");
+                        callback.onSuccess(upvotedBy != null && upvotedBy.contains(userId));
+                    } else {
+                        callback.onSuccess(false);
+                    }
+                });
+    }
+
+    public void getLatestThreads(int limit, DataCallback<List<ForumThread>> callback) {
+        db.collection("forum_threads")
+                .orderBy("createdAt", Query.Direction.DESCENDING)
+                .limit(limit)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        List<ForumThread> threads = new ArrayList<>();
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            ForumThread thread = document.toObject(ForumThread.class);
+                            thread.setId(document.getId());
                             threads.add(thread);
                         }
                         callback.onSuccess(threads);
@@ -706,5 +701,64 @@ public class ForumFirebaseService {
                         callback.onError(task.getException().getMessage());
                     }
                 });
+    }
+
+    public void createThread(ForumThread thread, EmptyCallback callback) {
+        Map<String, Object> threadData = new HashMap<>();
+        threadData.put("title", thread.getTitle());
+        threadData.put("content", thread.getContent());
+        threadData.put("authorId", thread.getAuthorId());
+        threadData.put("authorName", thread.getAuthorName());
+        threadData.put("categoryId", thread.getCategoryId());
+        threadData.put("categoryName", thread.getCategoryName());
+        threadData.put("upvotes", thread.getUpvotes());
+        threadData.put("views", thread.getViews());
+        threadData.put("replyCount", thread.getReplyCount());
+        threadData.put("isSolved", thread.isSolved());
+        threadData.put("isHot", thread.isHot());
+        threadData.put("isPinned", thread.isPinned());
+        threadData.put("createdAt", thread.getCreatedAt());
+        threadData.put("lastActivity", thread.getLastActivity());
+
+        // Lưu tags dưới dạng List<String>
+        if (thread.getTags() != null && !thread.getTags().isEmpty()) {
+            threadData.put("tags", thread.getTags());
+        } else {
+            threadData.put("tags", new ArrayList<String>());
+        }
+
+        db.collection("forum_threads")
+                .add(threadData)
+                .addOnSuccessListener(documentReference -> {
+                    // Cập nhật thread ID
+                    thread.setId(documentReference.getId());
+
+                    // Cập nhật thống kê forum
+                    updateForumStats(1, 0);
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    private void updateForumStats(int threadIncrement, int replyIncrement) {
+        // Cập nhật thống kê forum
+        db.collection("forum_stats").document("overall")
+                .update(
+                        "totalThreads", FieldValue.increment(threadIncrement),
+                        "totalReplies", FieldValue.increment(replyIncrement)
+                );
+    }
+
+    private void updateThreadReplyCount(String threadId, int increment) {
+        if (threadId == null || threadId.isEmpty()) return;
+
+        db.collection(COLLECTION_THREADS)
+                .document(threadId)
+                .update(
+                        "replyCount", FieldValue.increment(increment),
+                        "lastActivity", new Date()
+                )
+                .addOnFailureListener(e ->
+                        Log.e(TAG, "Error updating thread reply count: ", e));
     }
 }

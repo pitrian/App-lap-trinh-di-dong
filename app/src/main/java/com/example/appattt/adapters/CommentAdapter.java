@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -21,8 +20,8 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     private Context context;
     private List<ForumPost> commentList;
-    private OnCommentClickListener listener;
     private String currentUserId;
+    private OnCommentClickListener listener;
 
     public interface OnCommentClickListener {
         void onReplyClick(ForumPost comment);
@@ -42,16 +41,6 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         this.listener = listener;
     }
 
-    public void updateData(List<ForumPost> newList) {
-        this.commentList = newList;
-        notifyDataSetChanged();
-    }
-
-    public void addComment(ForumPost comment) {
-        commentList.add(comment);
-        notifyItemInserted(commentList.size() - 1);
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -64,93 +53,81 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ForumPost comment = commentList.get(position);
 
-        holder.tvAuthor.setText(comment.getAuthorName());
+        // Set content
         holder.tvContent.setText(comment.getContent());
-        holder.tvTime.setText(DateUtils.getTimeAgo(comment.getCreatedAt()));
+
+        // Set author
+        holder.tvAuthor.setText(comment.getAuthorName());
+
+        // Set upvotes
         holder.tvUpvotes.setText(String.valueOf(comment.getUpvotes()));
 
-        // Show solution badge
-        if (comment.isAnswer()) {
-            holder.tvSolutionBadge.setVisibility(View.VISIBLE);
-            holder.ivSolutionBadge.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvSolutionBadge.setVisibility(View.GONE);
-            holder.ivSolutionBadge.setVisibility(View.GONE);
+        // Set time
+        if (comment.getCreatedAt() != null) {
+            holder.tvTime.setText(DateUtils.getTimeAgo(comment.getCreatedAt()));
         }
 
-        // Show reply count if any
-        if (comment.getDepth() == 0) {
-            holder.tvReplyCount.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvReplyCount.setVisibility(View.GONE);
-        }
+        // Show solution badge - SỬA: Sử dụng isSolution() thay vì isAnswer()
+        holder.ivSolutionBadge.setVisibility(comment.isSolution() ? View.VISIBLE : View.GONE);
 
-        // Set upvote button state
-        holder.btnUpvote.setSelected(comment.getUpvotes() > 0);
+        // Adjust margin based on depth - SỬA: Sử dụng getDepth()
+        int depth = comment.getDepth();
+        int margin = depth * 40; // 40dp per level
 
-        // Enable mark as solution if user is thread author
-        boolean canMarkAsSolution = false; // TODO: Check if current user is thread author
-        holder.btnMarkSolution.setVisibility(canMarkAsSolution ? View.VISIBLE : View.GONE);
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
+        params.leftMargin = margin;
+        holder.itemView.setLayoutParams(params);
 
-        // Set listeners
+        // Show reply button only for top-level comments (depth == 0) - SỬA
+        holder.btnReply.setVisibility(depth == 0 ? View.VISIBLE : View.GONE);
+
+        // Show mark as solution button if user is thread author and comment is not already solution
+        boolean isThreadAuthor = currentUserId != null && currentUserId.equals(comment.getAuthorId());
+        holder.btnMarkSolution.setVisibility(
+                isThreadAuthor && !comment.isSolution() && depth == 0 ? View.VISIBLE : View.GONE
+        );
+
+        // Button listeners
         holder.btnReply.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onReplyClick(comment);
-            }
+            if (listener != null) listener.onReplyClick(comment);
         });
 
         holder.btnUpvote.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onUpvoteClick(comment);
-            }
+            if (listener != null) listener.onUpvoteClick(comment);
         });
 
         holder.tvAuthor.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onAuthorClick(comment.getAuthorId());
-            }
+            if (listener != null) listener.onAuthorClick(comment.getAuthorId());
         });
 
         holder.btnMarkSolution.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onMarkAsSolutionClick(comment);
-            }
+            if (listener != null) listener.onMarkAsSolutionClick(comment);
         });
 
-        holder.btnMore.setOnClickListener(v -> {
-            showMoreOptions(comment, holder.btnMore);
+        holder.btnReport.setOnClickListener(v -> {
+            if (listener != null) listener.onReportClick(comment);
         });
     }
 
     @Override
     public int getItemCount() {
-        return commentList.size();
+        return commentList != null ? commentList.size() : 0;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivAvatar;
-        LinearLayout ivSolutionBadge;
-        TextView tvAuthor, tvContent, tvTime, tvUpvotes, tvSolutionBadge, tvReplyCount;
-        View btnReply, btnUpvote, btnMarkSolution, btnMore;
+        TextView tvContent, tvAuthor, tvUpvotes, tvTime;
+        ImageView ivSolutionBadge, btnReply, btnUpvote, btnMarkSolution, btnReport;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivAvatar = itemView.findViewById(R.id.ivAvatar);
-            ivSolutionBadge = itemView.findViewById(R.id.ivSolutionBadge);
-            tvAuthor = itemView.findViewById(R.id.tvAuthor);
             tvContent = itemView.findViewById(R.id.tvContent);
-            tvTime = itemView.findViewById(R.id.tvTime);
+            tvAuthor = itemView.findViewById(R.id.tvAuthor);
             tvUpvotes = itemView.findViewById(R.id.tvUpvotes);
-            tvSolutionBadge = itemView.findViewById(R.id.tvSolutionBadge);
-            tvReplyCount = itemView.findViewById(R.id.tvReplyCount);
+            tvTime = itemView.findViewById(R.id.tvTime);
+            ivSolutionBadge = itemView.findViewById(R.id.ivSolutionBadge);
             btnReply = itemView.findViewById(R.id.btnReply);
             btnUpvote = itemView.findViewById(R.id.btnUpvote);
             btnMarkSolution = itemView.findViewById(R.id.btnMarkSolution);
-            btnMore = itemView.findViewById(R.id.btnMore);
         }
-    }
-
-    private void showMoreOptions(ForumPost comment, View anchor) {
-        // TODO: Implement options menu (report, copy, share, etc.)
     }
 }

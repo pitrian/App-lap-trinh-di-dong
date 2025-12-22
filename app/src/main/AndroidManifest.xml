@@ -43,7 +43,7 @@
         <activity
             android:name=".forum.ForumThreadListActivity"
             android:label="Threads"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.Appattt" />
 
         <activity
             android:name=".forum.ForumThreadDetailActivity"
@@ -58,7 +58,7 @@
         <activity
             android:name=".forum.WriteupsListActivity"
             android:label="Write-ups"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.Appattt" />
 
         <activity
             android:name=".forum.WriteupDetailActivity"

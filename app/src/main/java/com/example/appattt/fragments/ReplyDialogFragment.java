@@ -1,11 +1,11 @@
 package com.example.appattt.fragments;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -19,11 +19,14 @@ import com.example.appattt.services.ForumFirebaseService;
 
 public class ReplyDialogFragment extends DialogFragment {
 
-    private EditText etReplyContent;
-    private Button btnSubmit, btnCancel;
+    private static final String ARG_THREAD_ID = "thread_id";
+    private static final String ARG_PARENT_ID = "parent_id";
+    private static final String ARG_CATEGORY_ID = "category_id";
 
     private String threadId;
-    private String parentPostId;
+    private String parentId;
+    private String categoryId;
+
     private ForumFirebaseService forumService;
     private OnReplyPostedListener listener;
 
@@ -31,11 +34,21 @@ public class ReplyDialogFragment extends DialogFragment {
         void onReplyPosted();
     }
 
-    public static ReplyDialogFragment newInstance(String threadId, String parentPostId) {
+    public static ReplyDialogFragment newInstance(String threadId, String parentId) {
         ReplyDialogFragment fragment = new ReplyDialogFragment();
         Bundle args = new Bundle();
-        args.putString("threadId", threadId);
-        args.putString("parentPostId", parentPostId);
+        args.putString(ARG_THREAD_ID, threadId);
+        args.putString(ARG_PARENT_ID, parentId);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    public static ReplyDialogFragment newInstance(String threadId, String parentId, String categoryId) {
+        ReplyDialogFragment fragment = new ReplyDialogFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_THREAD_ID, threadId);
+        args.putString(ARG_PARENT_ID, parentId);
+        args.putString(ARG_CATEGORY_ID, categoryId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -44,8 +57,9 @@ public class ReplyDialogFragment extends DialogFragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            threadId = getArguments().getString("threadId");
-            parentPostId = getArguments().getString("parentPostId");
+            threadId = getArguments().getString(ARG_THREAD_ID);
+            parentId = getArguments().getString(ARG_PARENT_ID);
+            categoryId = getArguments().getString(ARG_CATEGORY_ID);
         }
         forumService = new ForumFirebaseService();
     }
@@ -53,70 +67,66 @@ public class ReplyDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-        return super.onCreateDialog(savedInstanceState);
-    }
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View view = inflater.inflate(R.layout.dialog_reply, null);
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_reply_dialog, container, false);
+        EditText etContent = view.findViewById(R.id.etContent);
 
-        etReplyContent = view.findViewById(R.id.etReplyContent);
-        btnSubmit = view.findViewById(R.id.btnSubmit);
-        btnCancel = view.findViewById(R.id.btnCancel);
+        builder.setView(view)
+                .setTitle(parentId == null ? "Reply to Thread" : "Reply to Comment")
+                .setPositiveButton("Post", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String content = etContent.getText().toString().trim();
 
-        setupListeners();
+                        if (content.isEmpty()) {
+                            Toast.makeText(getActivity(), "Please enter a reply", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-        return view;
-    }
+                        if (!forumService.isUserAuthenticated()) {
+                            Toast.makeText(getActivity(), "Please login to reply", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-    private void setupListeners() {
-        btnSubmit.setOnClickListener(v -> submitReply());
-        btnCancel.setOnClickListener(v -> dismiss());
-    }
+                        // SỬA: Tạo ForumPost với 4 tham số như constructor yêu cầu
+                        ForumPost post = new ForumPost(
+                                threadId,
+                                content,
+                                forumService.getCurrentUserId(),
+                                forumService.getCurrentUserName()
+                        );
 
-    private void submitReply() {
-        String content = etReplyContent.getText().toString().trim();
+                        // Set các thuộc tính bổ sung
+                        if (parentId != null) {
+                            post.setParentId(parentId);
+                            post.setDepth(1); // Độ sâu của reply là 1
+                        }
 
-        if (content.isEmpty()) {
-            etReplyContent.setError("Reply cannot be empty");
-            etReplyContent.requestFocus();
-            return;
-        }
+                        if (categoryId != null) {
+                            post.setCategoryId(categoryId);
+                        }
 
-        if (!forumService.isUserAuthenticated()) {
-            Toast.makeText(getContext(), "Please login to reply", Toast.LENGTH_SHORT).show();
-            dismiss();
-            return;
-        }
+                        forumService.createPost(post, new ForumFirebaseService.EmptyCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Toast.makeText(getActivity(), "Reply posted", Toast.LENGTH_SHORT).show();
+                                if (listener != null) {
+                                    listener.onReplyPosted();
+                                }
+                            }
 
-        ForumPost post = new ForumPost(threadId, content,
-                forumService.getCurrentUserId(),
-                forumService.getCurrentUserName(),
-                parentPostId);
+                            @Override
+                            public void onError(String error) {
+                                Toast.makeText(getActivity(), "Error: " + error, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                })
+                .setNegativeButton("Cancel", null);
 
-        btnSubmit.setEnabled(false);
-
-        forumService.createPost(post, new ForumFirebaseService.EmptyCallback() {
-            @Override
-            public void onSuccess() {
-                btnSubmit.setEnabled(true);
-                Toast.makeText(getContext(), "Reply posted!", Toast.LENGTH_SHORT).show();
-
-                if (listener != null) {
-                    listener.onReplyPosted();
-                }
-
-                dismiss();
-            }
-
-            @Override
-            public void onError(String error) {
-                btnSubmit.setEnabled(true);
-                Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
+        return builder.create();
     }
 
     public void setOnReplyPostedListener(OnReplyPostedListener listener) {
