@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layoutRoot"
+    android:orientation="vertical"
+    android:background="#0B1220"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- ===== TITLE ===== -->
+    <TextView
+        android:text="Learning Rooms"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:text="Choose a room and start your cybersecurity journey"
+        android:textColor="#9CA3AF"
+        android:textSize="13sp"
+        android:layout_marginTop="4dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <!-- ===== SEARCH ===== -->
+    <EditText
+        android:id="@+id/etSearch"
+        android:hint="Search rooms..."
+        android:textColor="#FFFFFF"
+        android:textColorHint="#9CA3AF"
+        android:background="#1F2937"
+        android:padding="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"/>
+
+    <!-- ===== FILTER BUTTON ===== -->
+    <Button
+        android:id="@+id/btnFilter"
+        android:text="Filters"
+        android:textColor="#FFFFFF"
+        android:background="#1F2937"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"/>
+
+    <!-- ===== FILTER PANEL ===== -->
+    <LinearLayout
+        android:id="@+id/layoutFilter"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:background="#111827"
+        android:padding="12dp"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Difficulty -->
+        <TextView
+            android:text="Difficulty"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <RadioGroup
+            android:id="@+id/rgDifficulty"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:text="All"
+                android:checked="true"
+                android:textColor="#FFFFFF"/>
+
+            <RadioButton
+                android:text="Easy"
+                android:textColor="#FFFFFF"/>
+
+            <RadioButton
+                android:text="Medium"
+                android:textColor="#FFFFFF"/>
+
+            <RadioButton
+                android:text="Hard"
+                android:textColor="#FFFFFF"/>
+        </RadioGroup>
+
+        <!-- Category -->
+        <TextView
+            android:text="Category"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/spCategory"
+            android:layout_marginTop="4dp"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"/>
+    </LinearLayout>
+
+    <!-- ===== ROOM LIST ===== -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRooms"
+        android:layout_marginTop="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+</LinearLayout>
