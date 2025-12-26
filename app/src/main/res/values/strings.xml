@@ -23,4 +23,6 @@
         <item>Web Security</item>
         <item>Malware Analysis</item>
     </string-array>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
