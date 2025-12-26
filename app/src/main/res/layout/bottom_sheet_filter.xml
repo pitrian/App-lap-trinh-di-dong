@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#0B1220">
+
+    <!-- Difficulty -->
+    <TextView
+        android:text="Difficulty"
+        android:textColor="#9CA3AF"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <RadioGroup
+        android:id="@+id/rgDifficulty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton android:id="@+id/diff_all" android:text="All"/>
+        <RadioButton android:id="@+id/diff_easy" android:text="Easy"/>
+        <RadioButton android:id="@+id/diff_medium" android:text="Medium"/>
+        <RadioButton android:id="@+id/diff_hard" android:text="Hard"/>
+    </RadioGroup>
+
+    <!-- Category -->
+    <TextView
+        android:text="Category"
+        android:textColor="#9CA3AF"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <RadioGroup
+        android:id="@+id/rgCategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioButton android:id="@+id/cat_all" android:text="All"/>
+        <RadioButton android:id="@+id/cat_web" android:text="Web"/>
+        <RadioButton android:id="@+id/cat_linux" android:text="Linux"/>
+        <RadioButton android:id="@+id/cat_windows" android:text="Windows"/>
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/btnApplyFilter"
+        android:text="Apply Filters"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#10B981"
+        android:textColor="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>
