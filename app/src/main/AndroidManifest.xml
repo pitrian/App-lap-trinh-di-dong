@@ -13,63 +13,61 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Appattt">
-
+        android:theme="@style/Theme.Appattt"
+        android:usesCleartextTraffic="true">
+        <activity
+            android:name=".ProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".RegisterActivity"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="false" />
-
         <activity
             android:name=".DashboardActivity"
             android:exported="true" />
-
         <activity
             android:name=".forum.ForumHomeActivity"
-            android:theme="@style/Theme.Appattt"
-            android:exported="true" />
+            android:exported="true"
+            android:theme="@style/Theme.Appattt" />
         <activity
             android:name=".forum.ForumThreadListActivity"
             android:label="Threads"
             android:theme="@style/Theme.Appattt" />
-
         <activity
             android:name=".forum.ForumThreadDetailActivity"
             android:label="Thread Detail"
-            android:theme="@style/AppTheme.NoActionBar" />
-
+            android:theme="@style/Theme.Appattt" />
         <activity
             android:name=".forum.CreatePostActivity"
             android:label="New Post"
             android:theme="@style/Theme.Appattt" />
-
         <activity
             android:name=".forum.WriteupsListActivity"
             android:label="Write-ups"
             android:theme="@style/Theme.Appattt" />
-
         <activity
             android:name=".forum.WriteupDetailActivity"
             android:label="Write-up Detail"
-            android:theme="@style/AppTheme.NoActionBar" />
-
+            android:theme="@style/Theme.Appattt" />
         <activity
             android:name=".forum.SubmitWriteupActivity"
             android:label="Submit Write-up"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.Appattt" />
 
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

@@ -2,6 +2,7 @@ package com.example.appattt.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class Writeup {
     private String id;
@@ -18,8 +19,14 @@ public class Writeup {
     private int comments;
     private int shares; // Thêm field shares
     private boolean verified;
+
+    private boolean featured;
     private boolean isFeatured;
     private Date createdAt;
+
+    private Date updatedAt;
+
+    private Map<String, Boolean> likedBy;
 
     public Writeup() {
         this.shares = 0; // Khởi tạo mặc định

@@ -1,8 +1,14 @@
 package com.example.appattt.forum;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -67,6 +73,44 @@ public class ForumThreadListActivity extends AppCompatActivity {
         layoutEmpty = findViewById(R.id.layoutEmpty);
         tvEmptyTitle = findViewById(R.id.tvEmptyTitle);
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage);
+
+        // Thêm các view từ XML
+        TextView tvCategoryTitle = findViewById(R.id.tvCategoryTitle);
+        ImageView ivFilter = findViewById(R.id.ivFilter);
+        EditText etSearchThreads = findViewById(R.id.etSearchThreads);
+        Button btnStartThread = findViewById(R.id.btnStartThread);
+
+        // Thêm click listeners nếu cần
+        ivFilter.setOnClickListener(v -> showFilterDialog());
+        etSearchThreads.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                searchThreads(etSearchThreads.getText().toString());
+                return true;
+            }
+            return false;
+        });
+        btnStartThread.setOnClickListener(v -> createNewThread());
+    }
+
+    private void searchThreads(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return;
+        }
+
+        searchQuery = query.trim();
+        loadThreads();
+    }
+
+    private void showFilterDialog() {
+        // Implement filter dialog
+    }
+
+    private void createNewThread() {
+        if (forumService.isUserAuthenticated()) {
+            startActivity(new Intent(this, CreatePostActivity.class));
+        } else {
+            Toast.makeText(this, "Please login to create thread", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setupToolbar() {
@@ -105,7 +149,10 @@ public class ForumThreadListActivity extends AppCompatActivity {
 
             @Override
             public void onCategoryClick(String categoryId) {
-                // Do nothing
+                // Cần implement: Mở category
+                Intent intent = new Intent(ForumThreadListActivity.this, ForumThreadListActivity.class);
+                intent.putExtra("category_id", categoryId);
+                startActivity(intent);
             }
 
             @Override
@@ -334,9 +381,13 @@ public class ForumThreadListActivity extends AppCompatActivity {
     }
 
     private void openThreadDetail(ForumThread thread) {
-        // TODO: Open thread detail activity
-        Toast.makeText(this, "Opening thread: " + thread.getTitle(), Toast.LENGTH_SHORT).show();
+        Log.d("ThreadClick", "Opening thread: " + thread.getId() + " - " + thread.getTitle());
+        Intent intent = new Intent(this, ForumThreadDetailActivity.class);
+        intent.putExtra("thread_id", thread.getId());
+        intent.putExtra("thread_title", thread.getTitle()); // optional
+        startActivity(intent);
     }
+
 
     private void openUserProfile(String userId) {
         // TODO: Open user profile

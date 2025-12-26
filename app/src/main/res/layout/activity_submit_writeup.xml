@@ -17,6 +17,7 @@
             android:background="@color/cyber_card_background"
             app:titleTextColor="@color/cyber_text_primary"
             app:navigationIcon="@drawable/ic_back"
+            app:navigationIconTint="@color/cyber_green_main"
             app:title="Submit Write-up" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -31,70 +32,154 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="16dp">
 
-            <!-- Title -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilTitle"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <!-- Title Label -->
+            <TextView
+                android:id="@+id/tvTitleLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Title Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Title"
-                android:layout_marginBottom="16dp"
-                app:hintTextColor="@color/cyber_text_primary"
-                app:boxStrokeColor="@color/cyber_border"
-                app:endIconMode="clear_text">
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="@color/cyber_card_background"
+                app:strokeColor="@color/cyber_border"
+                app:strokeWidth="1dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etTitle"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilTitle"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/cyber_text_primary"
-                    android:maxLines="2"
-                    android:imeOptions="actionNext" />
+                    app:hintTextColor="@color/cyber_text_secondary"
+                    app:boxStrokeColor="@android:color/transparent"
+                    app:boxStrokeWidth="0dp"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    app:endIconMode="clear_text">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Enter write-up title"
+                        android:textColor="@color/cyber_text_primary"
+                        android:textColorHint="@color/cyber_text_secondary"
+                        android:background="@android:color/transparent"
+                        android:padding="16dp"
+                        android:maxLines="2"
+                        android:imeOptions="actionNext" />
 
-            <!-- Room Name -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilRoom"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Room Name Label -->
+            <TextView
+                android:id="@+id/tvRoomLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Room Name"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Room Name Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardRoom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Room Name"
-                android:layout_marginBottom="16dp"
-                app:hintTextColor="@color/cyber_text_primary"
-                app:boxStrokeColor="@color/cyber_border"
-                app:endIconMode="clear_text">
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="@color/cyber_card_background"
+                app:strokeColor="@color/cyber_border"
+                app:strokeWidth="1dp">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etRoom"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilRoom"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/cyber_text_primary"
-                    android:imeOptions="actionNext" />
+                    app:hintTextColor="@color/cyber_text_secondary"
+                    app:boxStrokeColor="@android:color/transparent"
+                    app:boxStrokeWidth="0dp"
+                    app:boxBackgroundColor="@android:color/transparent"
+                    app:endIconMode="clear_text">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/etRoom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Enter room/challenge name"
+                        android:textColor="@color/cyber_text_primary"
+                        android:textColorHint="@color/cyber_text_secondary"
+                        android:background="@android:color/transparent"
+                        android:padding="16dp"
+                        android:imeOptions="actionNext" />
 
-            <!-- Difficulty -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/tilDifficulty"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Difficulty Label -->
+            <TextView
+                android:id="@+id/tvDifficultyLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Difficulty"
+                android:textColor="@color/cyber_text_primary"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Difficulty Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDifficulty"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Difficulty"
-                android:layout_marginBottom="16dp"
-                app:hintTextColor="@color/cyber_text_primary"
-                app:boxStrokeColor="@color/cyber_border">
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="@color/cyber_card_background"
+                app:strokeColor="@color/cyber_border"
+                app:strokeWidth="1dp">
 
-                <AutoCompleteTextView
-                    android:id="@+id/actvDifficulty"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tilDifficulty"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/cyber_text_primary"
-                    android:imeOptions="actionNext" />
+                    app:hintTextColor="@color/cyber_text_secondary"
+                    app:boxStrokeColor="@android:color/transparent"
+                    app:boxStrokeWidth="0dp"
+                    app:boxBackgroundColor="@android:color/transparent">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <AutoCompleteTextView
+                        android:id="@+id/actvDifficulty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Select difficulty level"
+                        android:textColor="@color/cyber_text_primary"
+                        android:textColorHint="@color/cyber_text_secondary"
+                        android:background="@android:color/transparent"
+                        android:padding="16dp"
+                        android:imeOptions="actionNext" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Tags Section -->
             <TextView
@@ -315,7 +400,7 @@
                         android:hint="Write your write-up content here...\n\nYou can use Markdown syntax:\n# Heading\n**bold** *italic*\n```code```\n- list"
                         android:textColor="@color/cyber_text_primary"
                         android:textColorHint="@color/cyber_text_secondary"
-                        android:background="@null"
+                        android:background="@color/cyber_card_background"
                         android:gravity="top"
                         android:inputType="textMultiLine"
                         android:padding="16dp"

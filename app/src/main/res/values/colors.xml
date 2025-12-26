@@ -19,7 +19,7 @@
     <color name="cyber_teal_accent">#00CED1</color>
     <color name="cyber_green_border">#39BF8F55</color>
     <color name="background">#FF121212</color>
-    <color name="cyber_orange_premium">#FFA500</color>
+    <color name="cyber_orange_premium">#231805</color>
     <color name="cyber_streak_fire">#FF4500</color>
     <color name="cyber_gradient_start_green">#39BF8F</color>
     <color name="cyber_gradient_purple">#9370DB</color>
@@ -41,4 +41,7 @@
     <color name="cyber_border">#30363D</color>
     <color name="cyber_text_dim">#8B949E</color>
     <color name="cyber_dark_card">#161B22</color>
+    <color name="cyber_orange">#FFD700</color>
+    <color name="cyber_yellow">#FFEB3B</color>
+
 </resources>

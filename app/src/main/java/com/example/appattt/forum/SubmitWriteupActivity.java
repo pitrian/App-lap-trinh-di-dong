@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -93,6 +94,12 @@ public class SubmitWriteupActivity extends AppCompatActivity {
     private void setupListeners() {
         btnAddTag.setOnClickListener(v -> addTag());
         btnSubmit.setOnClickListener(v -> submitWriteup());
+        // Thêm các sự kiện cho toolbar markdown
+        findViewById(R.id.btnBold).setOnClickListener(v -> insertMarkdownSyntax("**", "**"));
+        findViewById(R.id.btnItalic).setOnClickListener(v -> insertMarkdownSyntax("*", "*"));
+        findViewById(R.id.btnCode).setOnClickListener(v -> insertMarkdownSyntax("```\n", "\n```"));
+        findViewById(R.id.btnLink).setOnClickListener(v -> insertMarkdownSyntax("[", "](url)"));
+        findViewById(R.id.btnImage).setOnClickListener(v -> insertMarkdownSyntax("![alt text](", ")"));
 
         // Word count
         etContent.addTextChangedListener(new TextWatcher() {
@@ -181,11 +188,26 @@ public class SubmitWriteupActivity extends AppCompatActivity {
         chipGroupSelected.addView(chip);
     }
 
+    private void insertMarkdownSyntax(String prefix, String suffix) {
+        EditText etContent = findViewById(R.id.etContent);
+        int start = Math.max(etContent.getSelectionStart(), 0);
+        int end = Math.max(etContent.getSelectionEnd(), 0);
+
+        String selectedText = etContent.getText().subSequence(start, end).toString();
+        String replacement = prefix + selectedText + suffix;
+
+        etContent.getText().replace(start, end, replacement);
+        etContent.setSelection(start + prefix.length() + selectedText.length() + suffix.length());
+    }
+
     private void submitWriteup() {
         String title = etTitle.getText().toString().trim();
         String content = etContent.getText().toString().trim();
         String roomName = etRoom.getText().toString().trim();
         String difficulty = actvDifficulty.getText().toString().trim();
+
+        Log.d("SubmitWriteup", "User authenticated: " + forumService.isUserAuthenticated());
+        Log.d("SubmitWriteup", "Current user: " + forumService.getCurrentUserId());
 
         // Validation
         if (TextUtils.isEmpty(title)) {

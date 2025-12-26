@@ -47,7 +47,13 @@ public class DashboardActivity extends AppCompatActivity {
                 if (id == R.id.nav_dashboard) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return true;
-                } else if (id == R.id.nav_forum) {
+                }
+                else if (id == R.id.nav_profile) {
+                    startActivity(new Intent(DashboardActivity.this, ProfileActivity.class));
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+                }
+                else if (id == R.id.nav_forum) {
                     startActivity(new Intent(DashboardActivity.this, ForumHomeActivity.class));
                     drawerLayout.closeDrawer(GravityCompat.START);
                     return true;

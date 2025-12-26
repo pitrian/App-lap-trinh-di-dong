@@ -132,9 +132,10 @@ public class ForumFirebaseService {
                 });
     }
 
+
     public void getHotThreads(int limit, DataCallback<List<ForumThread>> callback) {
         db.collection(COLLECTION_THREADS)
-                .whereEqualTo("isHot", true)
+                .whereEqualTo("hot", true)
                 .orderBy("lastActivity", Query.Direction.DESCENDING)
                 .limit(limit)
                 .get()
@@ -255,84 +256,10 @@ public class ForumFirebaseService {
 
     // ========== WRITEUPS ==========
     // Trong class ForumFirebaseService
-    public void createWriteup(Writeup writeup, EmptyCallback callback) {
-        Map<String, Object> writeupData = new HashMap<>();
-        writeupData.put("title", writeup.getTitle());
-        writeupData.put("content", writeup.getContent());
-        writeupData.put("authorId", writeup.getAuthorId());
-        writeupData.put("authorName", writeup.getAuthorName());
-        writeupData.put("roomId", writeup.getRoomId());
-        writeupData.put("roomName", writeup.getRoomName());
-        writeupData.put("difficulty", writeup.getDifficulty());
-        writeupData.put("tags", writeup.getTags());
-        writeupData.put("likes", 0);
-        writeupData.put("views", 0);
-        writeupData.put("comments", 0); // Thêm comments field
-        writeupData.put("verified", false); // Thêm verified field
-        writeupData.put("isFeatured", false);
-        writeupData.put("createdAt", new Date());
 
-        db.collection(COLLECTION_WRITEUPS)
-                .add(writeupData)
-                .addOnSuccessListener(documentReference -> {
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error creating writeup: ", e);
-                    callback.onError(e.getMessage());
-                });
-    }
 
-    public void createPost(ForumPost post, EmptyCallback callback) {
-        Map<String, Object> postData = new HashMap<>();
-        postData.put("threadId", post.getThreadId());
-        postData.put("content", post.getContent());
-        postData.put("authorId", post.getAuthorId());
-        postData.put("authorName", post.getAuthorName());
-        postData.put("parentId", post.getParentId());
-        postData.put("upvotes", 0);
-        postData.put("isSolution", false); // Dùng isSolution thay vì isAnswer
-        postData.put("depth", post.getDepth()); // Thêm depth field
-        postData.put("createdAt", new Date());
 
-        db.collection(COLLECTION_POSTS)
-                .add(postData)
-                .addOnSuccessListener(documentReference -> {
-                    // Update thread reply count
-                    updateThreadReplyCount(post.getThreadId(), 1);
-                    callback.onSuccess();
-                })
-                .addOnFailureListener(e -> {
-                    Log.e(TAG, "Error creating post: ", e);
-                    callback.onError(e.getMessage());
-                });
-    }
 
-    public void getAllWriteups(String filter, int limit, DataCallback<List<Writeup>> callback) {
-        Query query = db.collection(COLLECTION_WRITEUPS)
-                .orderBy("createdAt", Query.Direction.DESCENDING);
-
-        if (limit > 0) {
-            query = query.limit(limit);
-        }
-
-        query.get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<Writeup> writeups = new ArrayList<>();
-                        for (DocumentSnapshot document : task.getResult()) {
-                            Writeup writeup = document.toObject(Writeup.class);
-                            if (writeup != null) {
-                                writeup.setId(document.getId());
-                                writeups.add(writeup);
-                            }
-                        }
-                        callback.onSuccess(writeups);
-                    } else {
-                        callback.onError("Error loading writeups");
-                    }
-                });
-    }
 
     public void toggleWriteupLike(String writeupId, DataCallback<Boolean> callback) {
         String userId = getCurrentUserId();
@@ -714,9 +641,9 @@ public class ForumFirebaseService {
         threadData.put("upvotes", thread.getUpvotes());
         threadData.put("views", thread.getViews());
         threadData.put("replyCount", thread.getReplyCount());
-        threadData.put("isSolved", thread.isSolved());
-        threadData.put("isHot", thread.isHot());
-        threadData.put("isPinned", thread.isPinned());
+        threadData.put("solved", thread.isSolved());
+        threadData.put("hot", thread.isHot());
+        threadData.put("pinned", thread.isPinned());
         threadData.put("createdAt", thread.getCreatedAt());
         threadData.put("lastActivity", thread.getLastActivity());
 
@@ -760,5 +687,114 @@ public class ForumFirebaseService {
                 )
                 .addOnFailureListener(e ->
                         Log.e(TAG, "Error updating thread reply count: ", e));
+    }
+
+    public void getAllWriteups(String filter, int limit, DataCallback<List<Writeup>> callback) {
+        Query query = db.collection("writeups");
+
+        // Lọc theo filter
+        switch (filter) {
+            case "recent":
+                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
+                break;
+            case "popular":
+                query = query.orderBy("likes", Query.Direction.DESCENDING);
+                break;
+            case "trending":
+                query = query.orderBy("views", Query.Direction.DESCENDING);
+                break;
+            case "beginner":
+                query = query.whereEqualTo("difficulty", "Beginner")
+                        .orderBy("createdAt", Query.Direction.DESCENDING);
+                break;
+            case "advanced":
+                query = query.whereEqualTo("difficulty", "Advanced")
+                        .orderBy("createdAt", Query.Direction.DESCENDING);
+                break;
+            default:
+                query = query.orderBy("createdAt", Query.Direction.DESCENDING);
+        }
+
+        if (limit > 0) {
+            query = query.limit(limit);
+        }
+
+        query.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Writeup> writeups = new ArrayList<>();
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        Writeup writeup = doc.toObject(Writeup.class);
+                        if (writeup != null) {
+                            writeup.setId(doc.getId());
+                            writeups.add(writeup);
+                        }
+                    }
+                    callback.onSuccess(writeups);
+                })
+                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+    }
+
+    public void createPost(ForumPost post, EmptyCallback callback) {
+        Map<String, Object> postData = new HashMap<>();
+        postData.put("threadId", post.getThreadId());
+        postData.put("writeupId", post.getWriteupId()); // Thêm dòng này
+        postData.put("content", post.getContent());
+        postData.put("authorId", post.getAuthorId());
+        postData.put("authorName", post.getAuthorName());
+        postData.put("parentId", post.getParentId());
+        postData.put("upvotes", 0);
+        postData.put("isSolution", false);
+        postData.put("depth", post.getDepth());
+        postData.put("createdAt", new Date());
+
+        db.collection(COLLECTION_POSTS)
+                .add(postData)
+                .addOnSuccessListener(documentReference -> {
+                    // Nếu là comment của thread
+                    if (post.getThreadId() != null && !post.getThreadId().isEmpty()) {
+                        updateThreadReplyCount(post.getThreadId(), 1);
+                    }
+                    // Nếu là comment của writeup
+                    if (post.getWriteupId() != null && !post.getWriteupId().isEmpty()) {
+                        db.collection(COLLECTION_WRITEUPS)
+                                .document(post.getWriteupId())
+                                .update("comments", FieldValue.increment(1))
+                                .addOnFailureListener(e -> Log.e(TAG, "Error updating writeup comment count: ", e));
+                    }
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error creating post: ", e);
+                    callback.onError(e.getMessage());
+                });
+    }
+
+    public void createWriteup(Writeup writeup, EmptyCallback callback) {
+        Map<String, Object> writeupData = new HashMap<>();
+        writeupData.put("title", writeup.getTitle());
+        writeupData.put("content", writeup.getContent());
+        writeupData.put("authorId", writeup.getAuthorId());
+        writeupData.put("authorName", writeup.getAuthorName());
+        writeupData.put("roomId", writeup.getRoomId());
+        writeupData.put("roomName", writeup.getRoomName());
+        writeupData.put("difficulty", writeup.getDifficulty());
+        writeupData.put("tags", writeup.getTags());
+        writeupData.put("likes", 0);
+        writeupData.put("views", 0);
+        writeupData.put("comments", 0);
+        writeupData.put("shares", 0); // Thêm dòng này
+        writeupData.put("verified", false);
+        writeupData.put("isFeatured", false);
+        writeupData.put("createdAt", new Date());
+
+        db.collection(COLLECTION_WRITEUPS)
+                .add(writeupData)
+                .addOnSuccessListener(documentReference -> {
+                    callback.onSuccess();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error creating writeup: ", e);
+                    callback.onError(e.getMessage());
+                });
     }
 }

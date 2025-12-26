@@ -330,7 +330,9 @@ public class ForumHomeActivity extends AppCompatActivity {
             intent.putExtra("title", "Active Incidents");
             startActivity(intent);
         });
+
     }
+
 
     private void handleNewPost() {
         if (forumService.isUserAuthenticated()) {
@@ -403,7 +405,6 @@ public class ForumHomeActivity extends AppCompatActivity {
         builder.setTitle("🔐 Login Required")
                 .setMessage("Please login to " + action)
                 .setPositiveButton("Login", (dialog, which) -> {
-                    // TODO: Navigate to login
                     Toast.makeText(this, "Go to login...", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)

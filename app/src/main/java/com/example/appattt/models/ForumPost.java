@@ -73,4 +73,8 @@ public class ForumPost {
 
     public List<String> getUpvotedBy() { return upvotedBy; }
     public void setUpvotedBy(List<String> upvotedBy) { this.upvotedBy = upvotedBy; }
+
+    public String getWriteupId() {
+        return "";
+    }
 }

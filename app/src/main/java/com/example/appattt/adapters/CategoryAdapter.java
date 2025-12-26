@@ -77,8 +77,8 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
         holder.ivIcon.setColorFilter(context.getResources().getColor(iconColor));
 
         // Set background based on category
-        int backgroundRes = getBackgroundForCategory(category.getName());
-        holder.cardView.setBackgroundResource(backgroundRes);
+        holder.cardView.setBackgroundResource(R.drawable.bg_category_solid);
+
 
         // Show badge if there are new posts
         boolean hasNewPosts = hasNewPostsInCategory(category);
@@ -169,7 +169,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.ViewHo
             case "Room Help & Tips":
                 return R.color.cyber_blue;
             case "CTF Discussions":
-                return R.color.cyber_orange_premium;
+                return R.color.cyber_orange;
             case "Write-ups & Guides":
                 return R.color.cyber_purple;
             default:

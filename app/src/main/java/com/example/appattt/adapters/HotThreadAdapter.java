@@ -1,6 +1,7 @@
 package com.example.appattt.adapters;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,7 +65,7 @@ public class HotThreadAdapter extends RecyclerView.Adapter<HotThreadAdapter.View
 
         // Set category color
         int cardColor = getCategoryColor(thread.getCategoryName());
-        holder.cardView.setCardBackgroundColor(context.getResources().getColor(cardColor));
+        holder.cardView.setCardBackgroundColor(Color.parseColor("#1C2128"));
 
         // Item click
         holder.itemView.setOnClickListener(v -> {
@@ -108,15 +109,15 @@ public class HotThreadAdapter extends RecyclerView.Adapter<HotThreadAdapter.View
     private int getCategoryColor(String categoryName) {
         switch (categoryName) {
             case "CTF Discussions":
-                return R.color.cyber_orange_premium;
+                return Color.parseColor("#39BF8F");
             case "Write-ups & Guides":
-                return R.color.cyber_purple;
+                return Color.parseColor("#8B5CF6");
             case "General Discussion":
-                return R.color.cyber_green_main;
+                return Color.parseColor("#00A8FF");
             case "Room Help & Tips":
-                return R.color.cyber_blue;
+                return Color.parseColor("#39BF8F");
             default:
-                return R.color.cyber_card_background;
+                return Color.parseColor("#8B949E");
         }
     }
 }

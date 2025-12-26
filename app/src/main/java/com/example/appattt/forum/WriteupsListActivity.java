@@ -33,6 +33,9 @@ public class WriteupsListActivity extends AppCompatActivity {
     private FloatingActionButton fabAddWriteup;
     private TabLayout tabLayout;
 
+    private TextView tvFeaturedTitle, tvFeaturedAuthor;
+    private View cardFeatured;
+    private String featuredWriteupId;
     private String currentFilter = "recent";
     private ForumFirebaseService forumService;
     private WriteupAdapter writeupAdapter;
@@ -61,6 +64,9 @@ public class WriteupsListActivity extends AppCompatActivity {
         tvEmptyMessage = findViewById(R.id.tvEmptyMessage);
         fabAddWriteup = findViewById(R.id.fabAddWriteup);
         tabLayout = findViewById(R.id.tabLayout);
+        cardFeatured = findViewById(R.id.cardFeatured);
+        tvFeaturedTitle = findViewById(R.id.tvFeaturedTitle);
+        tvFeaturedAuthor = findViewById(R.id.tvFeaturedAuthor);
     }
 
     private void setupToolbar() {
@@ -97,6 +103,8 @@ public class WriteupsListActivity extends AppCompatActivity {
     private void loadWriteups(String filter) {
         progressBar.setVisibility(View.VISIBLE);
         layoutEmpty.setVisibility(View.GONE);
+        // Ẩn cardFeatured cho đến khi có dữ liệu
+        cardFeatured.setVisibility(View.GONE);
 
         forumService.getAllWriteups(filter, 0, new ForumFirebaseService.DataCallback<List<Writeup>>() {
             @Override
@@ -105,6 +113,20 @@ public class WriteupsListActivity extends AppCompatActivity {
                 writeupList.clear();
                 writeupList.addAll(result);
                 writeupAdapter.notifyDataSetChanged();
+
+                // Update featured writeup
+                if (!writeupList.isEmpty()) {
+                    // Assuming the first writeup is featured
+                    Writeup featured = writeupList.get(0);
+                    featuredWriteupId = featured.getId();
+                    tvFeaturedTitle.setText(featured.getTitle());
+                    // Có thể tính readTime nếu có, tạm thời để 15 min read
+                    tvFeaturedAuthor.setText("by " + featured.getAuthorName() + " • 15 min read");
+                    cardFeatured.setVisibility(View.VISIBLE);
+                } else {
+                    featuredWriteupId = null;
+                    cardFeatured.setVisibility(View.GONE);
+                }
 
                 if (writeupList.isEmpty()) {
                     layoutEmpty.setVisibility(View.VISIBLE);
@@ -121,9 +143,11 @@ public class WriteupsListActivity extends AppCompatActivity {
                 layoutEmpty.setVisibility(View.VISIBLE);
                 tvEmptyTitle.setText("Error Loading");
                 tvEmptyMessage.setText("Please check your connection and try again.");
+                cardFeatured.setVisibility(View.GONE);
             }
         });
     }
+
 
     private void setupListeners() {
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -163,9 +187,14 @@ public class WriteupsListActivity extends AppCompatActivity {
         });
 
         // Featured writeup click
-        findViewById(R.id.cardFeatured).setOnClickListener(v -> {
-            // TODO: Open featured writeup
-            Toast.makeText(this, "Opening featured writeup", Toast.LENGTH_SHORT).show();
+        cardFeatured.setOnClickListener(v -> {
+            if (featuredWriteupId != null) {
+                Intent intent = new Intent(WriteupsListActivity.this, WriteupDetailActivity.class);
+                intent.putExtra("writeup_id", featuredWriteupId);
+                startActivity(intent);
+            } else {
+                Toast.makeText(this, "No featured writeup available", Toast.LENGTH_SHORT).show();
+            }
         });
 
         // Create first button
