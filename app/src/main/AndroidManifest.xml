@@ -13,9 +13,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Appattt">
+        android:theme="@style/Theme.Appattt"
+        android:usesCleartextTraffic="true">
         <activity
-            android:name=".RoomDetailActivity"
+            android:name=".ProfileActivity"
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
@@ -42,11 +43,11 @@
         <activity
             android:name=".forum.ForumThreadListActivity"
             android:label="Threads"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.Appattt" />
         <activity
             android:name=".forum.ForumThreadDetailActivity"
             android:label="Thread Detail"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.Appattt" />
         <activity
             android:name=".forum.CreatePostActivity"
             android:label="New Post"
@@ -54,15 +55,19 @@
         <activity
             android:name=".forum.WriteupsListActivity"
             android:label="Write-ups"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.Appattt" />
         <activity
             android:name=".forum.WriteupDetailActivity"
             android:label="Write-up Detail"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.Appattt" />
         <activity
             android:name=".forum.SubmitWriteupActivity"
             android:label="Submit Write-up"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/Theme.Appattt" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

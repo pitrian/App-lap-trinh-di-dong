@@ -8,14 +8,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appattt.R;
 import com.example.appattt.models.Writeup;
 import com.example.appattt.utils.DateUtils;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class WriteupAdapter extends RecyclerView.Adapter<WriteupAdapter.ViewHolder> {
 
@@ -55,48 +57,33 @@ public class WriteupAdapter extends RecyclerView.Adapter<WriteupAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Writeup writeup = writeupList.get(position);
 
+        // Set title
         holder.tvTitle.setText(writeup.getTitle());
+
+        // Set author
         holder.tvAuthor.setText(writeup.getAuthorName());
+
+        // Set room and difficulty
         holder.tvRoom.setText(writeup.getRoomName());
         holder.tvDifficulty.setText(writeup.getDifficulty());
+
+        // Set stats
+        holder.tvComments.setText(String.valueOf(writeup.getComments()));
         holder.tvLikes.setText(String.valueOf(writeup.getLikes()));
         holder.tvViews.setText(String.valueOf(writeup.getViews()));
-        holder.tvComments.setText(String.valueOf(writeup.getComments()));
-        holder.tvTime.setText(DateUtils.getTimeAgo(writeup.getCreatedAt()));
-
-        // Set difficulty color
-        int difficultyColor = getDifficultyColor(writeup.getDifficulty());
-        holder.tvDifficulty.setTextColor(context.getResources().getColor(difficultyColor));
-        holder.tvDifficulty.setBackgroundResource(getDifficultyBackground(writeup.getDifficulty()));
-
-        // Set featured badge
-        if (writeup.isFeatured()) {
-            holder.tvFeatured.setVisibility(View.VISIBLE);
-        } else {
-            holder.tvFeatured.setVisibility(View.GONE);
-        }
 
         // Set verified badge
-        if (writeup.isVerified()) {
-            holder.ivVerified.setVisibility(View.VISIBLE);
-        } else {
-            holder.ivVerified.setVisibility(View.GONE);
-        }
+        holder.ivVerified.setVisibility(writeup.isVerified() ? View.VISIBLE : View.GONE);
 
-        // Set tags
-        if (writeup.getTags() != null && !writeup.getTags().isEmpty()) {
-            StringBuilder tags = new StringBuilder();
-            for (String tag : writeup.getTags()) {
-                tags.append("#").append(tag).append(" ");
-            }
-            holder.tvTags.setText(tags.toString().trim());
-            holder.tvTags.setVisibility(View.VISIBLE);
+        // Set date
+        if (writeup.getCreatedAt() != null) {
+            // Sử dụng DateUtils thay vì SimpleDateFormat
+            holder.tvDate.setText(DateUtils.getTimeAgo(writeup.getCreatedAt()));
         } else {
-            holder.tvTags.setVisibility(View.GONE);
+            holder.tvDate.setText("Recently");
         }
-
         // Item click
-        holder.cardView.setOnClickListener(v -> {
+        holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
                 listener.onWriteupClick(writeup);
             }
@@ -119,27 +106,23 @@ public class WriteupAdapter extends RecyclerView.Adapter<WriteupAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        return writeupList.size();
+        return writeupList != null ? writeupList.size() : 0;
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        CardView cardView;
-        TextView tvTitle, tvAuthor, tvRoom, tvDifficulty, tvLikes, tvViews, tvComments, tvTime, tvTags, tvFeatured;
+        TextView tvTitle, tvAuthor, tvRoom, tvDifficulty, tvComments, tvLikes, tvViews, tvDate;
         ImageView ivVerified, btnLike;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.cardView);
             tvTitle = itemView.findViewById(R.id.tvTitle);
             tvAuthor = itemView.findViewById(R.id.tvAuthor);
             tvRoom = itemView.findViewById(R.id.tvRoom);
             tvDifficulty = itemView.findViewById(R.id.tvDifficulty);
+            tvComments = itemView.findViewById(R.id.tvComments);
             tvLikes = itemView.findViewById(R.id.tvLikes);
             tvViews = itemView.findViewById(R.id.tvViews);
-            tvComments = itemView.findViewById(R.id.tvComments);
-            tvTime = itemView.findViewById(R.id.tvTime);
-            tvTags = itemView.findViewById(R.id.tvTags);
-            tvFeatured = itemView.findViewById(R.id.tvFeatured);
+            tvDate = itemView.findViewById(R.id.tvDate);
             ivVerified = itemView.findViewById(R.id.ivVerified);
             btnLike = itemView.findViewById(R.id.btnLike);
         }
@@ -150,26 +133,13 @@ public class WriteupAdapter extends RecyclerView.Adapter<WriteupAdapter.ViewHold
             case "beginner":
                 return R.color.cyber_green_main;
             case "intermediate":
-                return R.color.cyber_orange_premium;
+                return R.color.cyber_blue;
             case "advanced":
-                return R.color.cyber_red;
+                return R.color.cyber_orange_premium;
             case "expert":
-                return R.color.cyber_purple;
+                return R.color.cyber_red;
             default:
                 return R.color.cyber_text_secondary;
-        }
-    }
-
-    private int getDifficultyBackground(String difficulty) {
-        switch (difficulty.toLowerCase()) {
-            case "beginner":
-                return R.drawable.bg_difficulty_beginner;
-            case "intermediate":
-                return R.drawable.bg_difficulty_intermediate;
-            case "advanced":
-                return R.drawable.bg_difficulty_advanced;
-            default:
-                return R.drawable.bg_difficulty_default;
         }
     }
 }

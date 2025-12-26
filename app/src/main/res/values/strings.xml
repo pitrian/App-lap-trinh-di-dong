@@ -1,6 +1,28 @@
 <resources>
     <string name="app_name">appattt</string>
     <string name="default_web_client_id">YOUR_WEB_CLIENT_ID_HERE</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="author_ctfmaster">CTFMaster • CTF Discussions</string>
+    <string name="author_l33thacker">L33tHacker • Write-ups vs Guides</string>
+    <string name="author_cyberstudent">CyberStudent • General Discussion</string>
+    <string name="search_hint">Search system database...</string>
+    <string name="categories_title">CATEGORIES</string>
+    <string name="active_incidents">ACTIVE INCIDENTS</string>
+    <string name="view_all">VIEW ALL</string>
+    <string name="threads_title">THREADS</string>
+    <string name="operators_title">OPERATORS</string>
+    <string name="new_post">NEW POST</string>
+    <string name="my_archive">MY ARCHIVE</string>
+    <string name="select_category">Select a category</string>
+    <string-array name="forum_categories">
+        <item>General Discussion</item>
+        <item>Room Help vs Tips</item>
+        <item>CTF Discussions</item>
+        <item>Write-ups vs Guides</item>
+        <item>Bug Bounty</item>
+        <item>Network Security</item>
+        <item>Web Security</item>
+        <item>Malware Analysis</item>
+    </string-array>
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>

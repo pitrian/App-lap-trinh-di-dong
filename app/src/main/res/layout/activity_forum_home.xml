@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cyber_background">
+    android:background="@drawable/cyber_dark_background"> <com.google.android.material.appbar.AppBarLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:elevation="0dp">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="?attr/actionBarSize"
+        android:background="#161B22"
+        app:titleTextColor="#FFFFFF"
+        app:navigationIcon="@drawable/ic_menu"
+        app:title="COMMUNITY TERMINAL" />
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="@color/cyber_card_background"
-            app:titleTextColor="@color/cyber_text_primary"
-            app:navigationIcon="@drawable/ic_menu"
-            app:title="Community Forum" />
-
-    </com.google.android.material.appbar.AppBarLayout>
+</com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -30,16 +30,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
-            <!-- Search Bar -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginBottom="24dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:strokeColor="@color/cyber_border"
+                android:layout_height="50dp"
+                android:layout_marginBottom="28dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="#1C2128"
+                app:strokeColor="#30363D"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -47,212 +47,197 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:padding="12dp">
+                    android:paddingHorizontal="16dp">
 
                     <ImageView
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
                         android:src="@drawable/ic_search"
-                        android:tint="@color/cyber_text_secondary" />
+                        app:tint="#8B949E" />
 
                     <EditText
                         android:id="@+id/etSearch"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:hint="Search forum topics..."
-                        android:textColor="@color/cyber_text_primary"
-                        android:textColorHint="@color/cyber_text_secondary"
+                        android:hint="Search system database..."
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#484F58"
                         android:background="@null"
                         android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:imeOptions="actionSearch"
+                        android:textSize="14sp"
                         android:singleLine="true" />
-
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Categories Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Categories"
-                android:textColor="@color/cyber_text_primary"
-                android:textSize="18sp"
+                android:text="CATEGORIES"
+                android:textColor="#58A6FF"
+                android:textSize="12sp"
+                android:letterSpacing="0.2"
                 android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="16dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCategories"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="32dp" />
 
-            <!-- Hot Topics Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="12dp">
+                android:layout_marginBottom="16dp">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="🔥 Hot Topics"
-                    android:textColor="@color/cyber_text_primary"
-                    android:textSize="18sp"
+                    android:text="ACTIVE INCIDENTS"
+                    android:textColor="#F85149"
+                    android:textSize="12sp"
+                    android:letterSpacing="0.2"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvViewAllHot"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View All"
-                    android:textColor="@color/cyber_green_main"
-                    android:textSize="14sp"
+                    android:text="VIEW ALL"
+                    android:textColor="#39BF8F"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
-
             </LinearLayout>
 
-            <!-- Hot Topics RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvHotThreads"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="32dp" />
 
-            <!-- Stats Cards -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
+                android:layout_marginBottom="32dp">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="90dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    app:cardCornerRadius="12dp"
-                    app:cardBackgroundColor="@color/cyber_green_main"
-                    app:cardElevation="4dp">
+                    android:layout_marginEnd="10dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#161B22"
+                    app:strokeColor="#30363D"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="16dp">
-
+                        android:gravity="center">
                         <TextView
                             android:id="@+id/tvTotalThreads"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="1.2K"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="24sp"
+                            android:textColor="#39BF8F"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Total Threads"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="12sp" />
-
+                            android:text="THREADS"
+                            android:textColor="#8B949E"
+                            android:textSize="10sp" />
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="90dp"
                     android:layout_weight="1"
-                    app:cardCornerRadius="12dp"
-                    app:cardBackgroundColor="@color/cyber_purple"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#161B22"
+                    app:strokeColor="#30363D"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="16dp">
-
+                        android:gravity="center">
                         <TextView
                             android:id="@+id/tvActiveUsers"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="342"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="24sp"
+                            android:textColor="#8B5CF6"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
-
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Active Users"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="12sp" />
-
+                            android:text="OPERATORS"
+                            android:textColor="#8B949E"
+                            android:textSize="10sp" />
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
-
             </LinearLayout>
 
-            <!-- Quick Actions -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Quick Actions"
-                android:textColor="@color/cyber_text_primary"
-                android:textSize="18sp"
+                android:text="QUICK OPERATIONS"
+                android:textColor="#58A6FF"
+                android:textSize="12sp"
+                android:letterSpacing="0.2"
                 android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="16dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="24dp">
+                android:orientation="horizontal">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardNewPost"
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="10dp"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#161B22"
+                    app:strokeColor="#39BF8F"
+                    app:strokeWidth="1dp"
                     android:foreground="?attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="12dp">
-
+                        android:gravity="center">
                         <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:src="@drawable/ic_create"
-                            android:tint="@color/cyber_green_main" />
-
+                            app:tint="#39BF8F" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="New Post"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="12sp"
+                            android:text="NEW POST"
+                            android:textColor="#FFFFFF"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
                             android:layout_marginTop="8dp" />
-
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
@@ -261,49 +246,48 @@
                     android:layout_height="80dp"
                     android:layout_weight="1"
                     app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#161B22"
+                    app:strokeColor="#30363D"
+                    app:strokeWidth="1dp"
                     android:foreground="?attr/selectableItemBackground">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:orientation="vertical"
-                        android:gravity="center"
-                        android:padding="12dp">
-
+                        android:gravity="center">
                         <ImageView
-                            android:layout_width="32dp"
-                            android:layout_height="32dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:src="@drawable/ic_list"
-                            android:tint="@color/cyber_green_main" />
-
+                            app:tint="#8B949E" />
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="My Threads"
-                            android:textColor="@color/cyber_text_primary"
-                            android:textSize="12sp"
+                            android:text="MY ARCHIVE"
+                            android:textColor="#8B949E"
+                            android:textSize="11sp"
+                            android:textStyle="bold"
                             android:layout_marginTop="8dp" />
-
                     </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
 
+
             <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/progressIndicator"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
+                android:indeterminateTint="#39BF8F"
                 android:visibility="gone" />
 
         </LinearLayout>
-
     </androidx.core.widget.NestedScrollView>
 
-    <!-- New Post FAB -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabNewPost"
         android:layout_width="wrap_content"
@@ -311,6 +295,8 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="24dp"
         android:src="@drawable/ic_add"
-        app:backgroundTint="@color/cyber_green_main" />
+        app:backgroundTint="#39BF8F"
+        app:tint="#000000"
+        app:elevation="8dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

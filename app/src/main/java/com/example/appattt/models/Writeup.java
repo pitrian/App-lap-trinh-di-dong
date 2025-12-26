@@ -2,6 +2,7 @@ package com.example.appattt.models;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class Writeup {
     private String id;
@@ -9,25 +10,30 @@ public class Writeup {
     private String content;
     private String authorId;
     private String authorName;
-    private String authorAvatar;
     private String roomId;
     private String roomName;
+    private String difficulty;
     private List<String> tags;
-    private String difficulty; // Beginner, Intermediate, Advanced
     private int likes;
     private int views;
     private int comments;
+    private int shares; // Thêm field shares
+    private boolean verified;
 
-    private int shares;
+    private boolean featured;
     private boolean isFeatured;
-    private boolean isVerified;
     private Date createdAt;
+
     private Date updatedAt;
 
-    public Writeup() {}
+    private Map<String, Boolean> likedBy;
 
-    public Writeup(String title, String content, String authorId, String authorName,
-                   String roomId, String roomName, String difficulty) {
+    public Writeup() {
+        this.shares = 0; // Khởi tạo mặc định
+    }
+
+    public Writeup(String title, String content, String authorId,
+                   String authorName, String roomId, String roomName, String difficulty) {
         this.title = title;
         this.content = content;
         this.authorId = authorId;
@@ -38,10 +44,10 @@ public class Writeup {
         this.likes = 0;
         this.views = 0;
         this.comments = 0;
+        this.shares = 0; // Khởi tạo
+        this.verified = false;
         this.isFeatured = false;
-        this.isVerified = false;
         this.createdAt = new Date();
-        this.updatedAt = new Date();
     }
 
     // Getters and Setters
@@ -60,20 +66,17 @@ public class Writeup {
     public String getAuthorName() { return authorName; }
     public void setAuthorName(String authorName) { this.authorName = authorName; }
 
-    public String getAuthorAvatar() { return authorAvatar; }
-    public void setAuthorAvatar(String authorAvatar) { this.authorAvatar = authorAvatar; }
-
     public String getRoomId() { return roomId; }
     public void setRoomId(String roomId) { this.roomId = roomId; }
 
     public String getRoomName() { return roomName; }
     public void setRoomName(String roomName) { this.roomName = roomName; }
 
-    public List<String> getTags() { return tags; }
-    public void setTags(List<String> tags) { this.tags = tags; }
-
     public String getDifficulty() { return difficulty; }
     public void setDifficulty(String difficulty) { this.difficulty = difficulty; }
+
+    public List<String> getTags() { return tags; }
+    public void setTags(List<String> tags) { this.tags = tags; }
 
     public int getLikes() { return likes; }
     public void setLikes(int likes) { this.likes = likes; }
@@ -84,23 +87,16 @@ public class Writeup {
     public int getComments() { return comments; }
     public void setComments(int comments) { this.comments = comments; }
 
+    // Thêm getter/setter cho shares
+    public int getShares() { return shares; }
+    public void setShares(int shares) { this.shares = shares; }
+
+    public boolean isVerified() { return verified; }
+    public void setVerified(boolean verified) { this.verified = verified; }
+
     public boolean isFeatured() { return isFeatured; }
     public void setFeatured(boolean featured) { isFeatured = featured; }
 
-    public boolean isVerified() { return isVerified; }
-    public void setVerified(boolean verified) { isVerified = verified; }
-
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
-
-    public Date getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
-
-    public int getShares() {
-        return shares;
-    }
-
-    public void setShares(int shares) {
-        this.shares = shares;
-    }
 }

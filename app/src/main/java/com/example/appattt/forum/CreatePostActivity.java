@@ -1,5 +1,6 @@
 package com.example.appattt.forum;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,10 +27,11 @@ import java.util.List;
 public class CreatePostActivity extends AppCompatActivity {
 
     private Toolbar toolbar;
-    private EditText etTitle, etContent;
+    private EditText etTitle, etContent, etTagInput;
     private Spinner spinnerCategory;
-    private Button btnSubmit;
+    private Button btnPublish, btnCancel;
     private ProgressBar progressBar;
+    private TextView tvBackLink;
 
     private ForumFirebaseService forumService;
     private List<ForumCategory> categories = new ArrayList<>();
@@ -50,9 +53,12 @@ public class CreatePostActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         etTitle = findViewById(R.id.etTitle);
         etContent = findViewById(R.id.etContent);
+        etTagInput = findViewById(R.id.etTagInput);
         spinnerCategory = findViewById(R.id.spinnerCategory);
-        btnSubmit = findViewById(R.id.btnSubmit);
+        btnPublish = findViewById(R.id.btnPublish);
+        btnCancel = findViewById(R.id.btnCancel);
         progressBar = findViewById(R.id.progressBar);
+        tvBackLink = findViewById(R.id.tvBackLink);
     }
 
     private void setupToolbar() {
@@ -73,6 +79,11 @@ public class CreatePostActivity extends AppCompatActivity {
                 categories.clear();
                 categories.addAll(result);
 
+                // Nếu không có dữ liệu từ Firebase, load mẫu
+                if (categories.isEmpty()) {
+                    loadSampleCategories();
+                }
+
                 // Setup spinner
                 List<String> categoryNames = new ArrayList<>();
                 for (ForumCategory category : categories) {
@@ -86,19 +97,84 @@ public class CreatePostActivity extends AppCompatActivity {
                 );
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinnerCategory.setAdapter(adapter);
+
+                // Chọn item đầu tiên
+                if (categoryNames.size() > 0) {
+                    spinnerCategory.setSelection(0);
+                }
             }
 
             @Override
             public void onError(String error) {
                 progressBar.setVisibility(View.GONE);
+                // Dùng mẫu nếu có lỗi
+                loadSampleCategories();
+
+                List<String> categoryNames = new ArrayList<>();
+                for (ForumCategory category : categories) {
+                    categoryNames.add(category.getName());
+                }
+
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                        CreatePostActivity.this,
+                        android.R.layout.simple_spinner_item,
+                        categoryNames
+                );
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerCategory.setAdapter(adapter);
+
                 Toast.makeText(CreatePostActivity.this,
-                        "Error loading categories: " + error, Toast.LENGTH_SHORT).show();
+                        "Using sample categories", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
+    private void loadSampleCategories() {
+        categories.clear();
+        // Thêm các categories mẫu
+        categories.add(new ForumCategory(
+                "general",
+                "General Discussion",
+                "Talk about anything related to cybersecurity",
+                "ic_chat_bubble",
+                234,
+                1542
+        ));
+        categories.add(new ForumCategory(
+                "room-help",
+                "Room Help & Tips",
+                "Get help with specific rooms and challenges",
+                "ic_help_circle",
+                512,
+                3241
+        ));
+        categories.add(new ForumCategory(
+                "ctf",
+                "CTF Discussions",
+                "Discuss Capture The Flag competitions",
+                "ic_flag",
+                189,
+                942
+        ));
+        categories.add(new ForumCategory(
+                "writeups",
+                "Write-ups & Guides",
+                "Detailed walkthroughs and tutorials",
+                "ic_document_text",
+                421,
+                2134
+        ));
+    }
+
     private void setupListeners() {
-        btnSubmit.setOnClickListener(v -> createPost());
+        // Nút Publish
+        btnPublish.setOnClickListener(v -> createPost());
+
+        // Nút Cancel
+        btnCancel.setOnClickListener(v -> finish());
+
+        // Back link
+        tvBackLink.setOnClickListener(v -> finish());
     }
 
     private void createPost() {
@@ -131,35 +207,48 @@ public class CreatePostActivity extends AppCompatActivity {
 
         ForumCategory selectedCategory = categories.get(selectedPosition);
 
-        ForumThread thread = new ForumThread(
-                title,
-                content,
-                forumService.getCurrentUserId(),
-                forumService.getCurrentUserName(),
-                selectedCategory.getId(),
-                selectedCategory.getName()
-        );
+        // Tạo bài đăng mới
+        ForumThread thread = new ForumThread();
+        thread.setTitle(title);
+        thread.setContent(content);
+        thread.setAuthorId(forumService.getCurrentUserId());
+        thread.setAuthorName(forumService.getCurrentUserName());
+        thread.setCategoryId(selectedCategory.getId());
+        thread.setCategoryName(selectedCategory.getName());
+
+        // Thêm tags nếu có - sử dụng setTagsArray để tương thích với model mới
+        String tagsInput = etTagInput.getText().toString().trim();
+        if (!TextUtils.isEmpty(tagsInput)) {
+            String[] tagArray = tagsInput.split(",\\s*");
+            thread.setTagsArray(tagArray);
+        }
 
         progressBar.setVisibility(View.VISIBLE);
-        btnSubmit.setEnabled(false);
+        btnPublish.setEnabled(false);
+        btnCancel.setEnabled(false);
 
         forumService.createThread(thread, new ForumFirebaseService.EmptyCallback() {
             @Override
             public void onSuccess() {
                 progressBar.setVisibility(View.GONE);
-                btnSubmit.setEnabled(true);
+                btnPublish.setEnabled(true);
+                btnCancel.setEnabled(true);
 
                 Toast.makeText(CreatePostActivity.this,
                         "Post created successfully!", Toast.LENGTH_SHORT).show();
 
-                // Return to forum
+                // Điều hướng về trang chủ forum
+                Intent intent = new Intent(CreatePostActivity.this, ForumHomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
                 finish();
             }
 
             @Override
             public void onError(String error) {
                 progressBar.setVisibility(View.GONE);
-                btnSubmit.setEnabled(true);
+                btnPublish.setEnabled(true);
+                btnCancel.setEnabled(true);
 
                 Toast.makeText(CreatePostActivity.this,
                         "Error creating post: " + error, Toast.LENGTH_SHORT).show();

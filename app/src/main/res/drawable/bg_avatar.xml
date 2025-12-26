@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/cyber_card_background" />
+    <solid android:color="#1AFFFFFF" />
     <corners android:radius="20dp" />
-</shape>
+    <stroke
+        android:width="2dp"
+        android:color="#00FF99" /> </shape>

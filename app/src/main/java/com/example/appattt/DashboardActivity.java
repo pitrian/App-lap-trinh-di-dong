@@ -3,7 +3,6 @@ package com.example.appattt;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -11,10 +10,10 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 
 import com.example.appattt.forum.ForumHomeActivity;
-import com.example.appattt.fragments.RoomsFragment;
+import com.example.appattt.forum.WriteupsListActivity;
+
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -32,127 +31,64 @@ public class DashboardActivity extends AppCompatActivity {
         navView = findViewById(R.id.nav_view);
 
         ImageView menuIcon = findViewById(R.id.menu_icon);
+        // Sửa lại để dùng GravityCompat.START cho chuẩn
         menuIcon.setOnClickListener(v -> drawerLayout.openDrawer(GravityCompat.START));
 
+        // Gọi hàm thiết lập listener để code gọn hơn
         setupNavigationListener();
     }
 
-    // ===============================
-    // MENU DRAWER HANDLING
-    // ===============================
     private void setupNavigationListener() {
-        navView.setNavigationItemSelectedListener(item -> {
+        navView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                int id = item.getItemId();
 
-            int id = item.getItemId();
+                if (id == R.id.nav_dashboard) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+                }
+                else if (id == R.id.nav_profile) {
+                    startActivity(new Intent(DashboardActivity.this, ProfileActivity.class));
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+                }
+                else if (id == R.id.nav_forum) {
+                    startActivity(new Intent(DashboardActivity.this, ForumHomeActivity.class));
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+                } else if (id == R.id.nav_writeup) {
+                    // SỬA TẠI ĐÂY: Thay Toast bằng startActivity để UI Write-ups có thể hiện lên [cite: 1436]
+                    startActivity(new Intent(DashboardActivity.this, WriteupsListActivity.class));
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    return true;
+                } else if (id == R.id.nav_logout) {
+                    doLogout();
+                    return true;
+                }
 
-            if (id == R.id.nav_dashboard) {
-
-                showDashboard();
                 drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-
-            } else if (id == R.id.nav_rooms) {
-
-                openFragment(new RoomsFragment());
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-
-            } else if (id == R.id.nav_forum) {
-
-                startActivity(new Intent(this, ForumHomeActivity.class));
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-
-            } else if (id == R.id.nav_writeup) {
-
-                Toast.makeText(this,
-                        "Chức năng Writeup đang được phát triển!",
-                        Toast.LENGTH_SHORT).show();
-                drawerLayout.closeDrawer(GravityCompat.START);
-                return true;
-
-            } else if (id == R.id.nav_logout) {
-
-                doLogout();
                 return true;
             }
-
-            drawerLayout.closeDrawer(GravityCompat.START);
-            return true;
         });
     }
 
-    // ===============================
-    // BƯỚC 3 – HÀM MỞ FRAGMENT (QUAN TRỌNG NHẤT)
-    // ===============================
-    public void openFragment(Fragment fragment) {
-
-        // 1. Ẩn dashboard (ScrollView)
-        View dashboardContent = findViewById(R.id.dashboard_content);
-        if (dashboardContent != null) {
-            dashboardContent.setVisibility(View.GONE);
-        }
-
-        // 2. Hiện fragment container
-        View fragmentContainer = findViewById(R.id.fragment_container);
-        if (fragmentContainer != null) {
-            fragmentContainer.setVisibility(View.VISIBLE);
-        }
-
-        // 3. Replace Fragment
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fragment_container, fragment)
-                .addToBackStack(null)
-                .commit();
-    }
-
-    // ===============================
-    // QUAY VỀ DASHBOARD
-    // ===============================
-    private void showDashboard() {
-
-        View dashboardContent = findViewById(R.id.dashboard_content);
-        View fragmentContainer = findViewById(R.id.fragment_container);
-
-        if (dashboardContent != null) {
-            dashboardContent.setVisibility(View.VISIBLE);
-        }
-
-        if (fragmentContainer != null) {
-            fragmentContainer.setVisibility(View.GONE);
-        }
-
-        getSupportFragmentManager().popBackStack();
-    }
-
-    // ===============================
-    // LOGOUT
-    // ===============================
     private void doLogout() {
         FirebaseAuth.getInstance().signOut();
 
-        Intent intent = new Intent(this, LoginActivity.class);
+        Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
     }
 
-    // ===============================
-    // BACK BUTTON
-    // ===============================
+
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
-            return;
+        } else {
+            super.onBackPressed();
         }
-
-        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            showDashboard();
-            return;
-        }
-
-        super.onBackPressed();
     }
 }

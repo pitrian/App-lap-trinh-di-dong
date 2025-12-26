@@ -1,6 +1,7 @@
 package com.example.appattt.models;
 
 import java.util.Date;
+import java.util.List;
 
 public class ForumPost {
     private String id;
@@ -8,28 +9,26 @@ public class ForumPost {
     private String content;
     private String authorId;
     private String authorName;
-    private String authorAvatar;
+    private String parentId;
     private int upvotes;
-    private String parentPostId; // For nested replies
-    private int depth; // 0 = top-level comment
-    private boolean isAnswer; // Marked as solution
+    private boolean isSolution; // Trường isSolution
+    private int depth; // Thêm field depth
     private Date createdAt;
-    private Date updatedAt;
+    private String categoryId;
 
-    // Constructors
+    private List<String> upvotedBy;
+
     public ForumPost() {}
 
-    public ForumPost(String threadId, String content, String authorId, String authorName, String parentPostId) {
+    public ForumPost(String threadId, String content, String authorId, String authorName) {
         this.threadId = threadId;
         this.content = content;
         this.authorId = authorId;
         this.authorName = authorName;
-        this.parentPostId = parentPostId;
         this.upvotes = 0;
-        this.depth = parentPostId == null ? 0 : 1;
-        this.isAnswer = false;
+        this.isSolution = false;
+        this.depth = 0; // Mặc định depth = 0 (comment gốc)
         this.createdAt = new Date();
-        this.updatedAt = new Date();
     }
 
     // Getters and Setters
@@ -48,24 +47,34 @@ public class ForumPost {
     public String getAuthorName() { return authorName; }
     public void setAuthorName(String authorName) { this.authorName = authorName; }
 
-    public String getAuthorAvatar() { return authorAvatar; }
-    public void setAuthorAvatar(String authorAvatar) { this.authorAvatar = authorAvatar; }
+    public String getParentId() { return parentId; }
+    public void setParentId(String parentId) { this.parentId = parentId; }
 
     public int getUpvotes() { return upvotes; }
     public void setUpvotes(int upvotes) { this.upvotes = upvotes; }
 
-    public String getParentPostId() { return parentPostId; }
-    public void setParentPostId(String parentPostId) { this.parentPostId = parentPostId; }
+    // Đổi tên phương thức cho phù hợp (isAnswer -> isSolution)
+    public boolean isSolution() { return isSolution; }
+    public void setSolution(boolean solution) { isSolution = solution; }
 
+    // Thêm phương thức isAnswer() để tương thích với code cũ (nếu cần)
+    public boolean isAnswer() { return isSolution; }
+    public void setAnswer(boolean answer) { this.isSolution = answer; }
+
+    // Thêm getter/setter cho depth
     public int getDepth() { return depth; }
     public void setDepth(int depth) { this.depth = depth; }
-
-    public boolean isAnswer() { return isAnswer; }
-    public void setAnswer(boolean answer) { isAnswer = answer; }
 
     public Date getCreatedAt() { return createdAt; }
     public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
-    public Date getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(Date updatedAt) { this.updatedAt = updatedAt; }
+    public String getCategoryId() { return categoryId; }
+    public void setCategoryId(String categoryId) { this.categoryId = categoryId; }
+
+    public List<String> getUpvotedBy() { return upvotedBy; }
+    public void setUpvotedBy(List<String> upvotedBy) { this.upvotedBy = upvotedBy; }
+
+    public String getWriteupId() {
+        return "";
+    }
 }

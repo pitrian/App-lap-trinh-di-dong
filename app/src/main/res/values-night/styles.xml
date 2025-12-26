@@ -8,35 +8,35 @@
         <item name="android:navigationBarColor">@color/cyber_dark_background</item>
         <item name="android:windowBackground">@color/cyber_dark_background</item>
     </style>
+    <style name="Theme.Appattt" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/cyber_green_main</item>
+        <item name="colorPrimaryVariant">@color/cyber_green_main</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/cyber_background</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/cyber_green_main</item>
+    </style>
+
     <style name="RecentActivityCardStyle">
         <item name="cardCornerRadius">12dp</item>
         <item name="cardBackgroundColor">@color/cyber_card_background</item>
         <item name="cardElevation">0dp</item>
     </style>
-        <style name="Theme.Appattt" parent="Theme.Material3.DayNight.NoActionBar">
-            <!-- Customize your light theme here. -->
-            <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-            <item name="colorPrimary">@color/colorPrimary</item>
-            <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
-            <item name="colorOnPrimary">@color/white</item>
-        </style>
-        <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-            <!-- Customize your theme here. For example: -->
-            <item name="colorPrimary">@color/colorPrimary</item>
-            <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-            <item name="colorAccent">@color/colorAccent</item>
-            <item name="windowActionBar">false</item>
-            <item name="windowNoTitle">true</item>
-        </style>
-    <style name="FullScreenDialog" parent="Theme.MaterialComponents.Light.NoActionBar">
+
+    <style name="FullScreenDialog" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowNoTitle">true</item>
-        <item name="android:windowFullscreen">true</item>
         <item name="android:windowIsFloating">false</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
     </style>
-        <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-            <!-- Customize your theme here. -->
-        </style>
 
-
+    <style name="ShapeAppearanceOverlay.App.Card.BottomRounded" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeBottomLeft">10dp</item>
+    </style>
 </resources>

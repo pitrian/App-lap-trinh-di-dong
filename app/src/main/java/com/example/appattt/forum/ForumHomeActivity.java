@@ -3,6 +3,7 @@ package com.example.appattt.forum;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
@@ -18,26 +19,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.appattt.R;
 import com.example.appattt.adapters.CategoryAdapter;
-import com.example.appattt.adapters.ThreadAdapter;
+import com.example.appattt.adapters.HotThreadAdapter;
 import com.example.appattt.models.ForumCategory;
 import com.example.appattt.models.ForumThread;
 import com.example.appattt.services.ForumFirebaseService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ForumHomeActivity extends AppCompatActivity {
 
     private RecyclerView rvCategories, rvHotThreads;
     private EditText etSearch;
-    private ProgressBar progressBar;
+    private ProgressBar progressIndicator;
     private ImageView fabNewPost;
     private View cardNewPost, cardMyThreads, tvViewAllHot;
     private TextView tvTotalThreads, tvActiveUsers;
 
     private ForumFirebaseService forumService;
     private CategoryAdapter categoryAdapter;
-    private ThreadAdapter hotThreadsAdapter;
+    private HotThreadAdapter hotThreadsAdapter;
     private List<ForumCategory> categoryList = new ArrayList<>();
     private List<ForumThread> hotThreadsList = new ArrayList<>();
 
@@ -53,15 +55,15 @@ public class ForumHomeActivity extends AppCompatActivity {
         setupRecyclerView();
         loadCategories();
         loadHotThreads();
-        setupListeners();
         loadForumStats();
+        setupListeners();
     }
 
     private void initViews() {
         rvCategories = findViewById(R.id.rvCategories);
         rvHotThreads = findViewById(R.id.rvHotThreads);
         etSearch = findViewById(R.id.etSearch);
-        progressBar = findViewById(R.id.progressBar);
+        progressIndicator = findViewById(R.id.progressIndicator);
         fabNewPost = findViewById(R.id.fabNewPost);
         cardNewPost = findViewById(R.id.cardNewPost);
         cardMyThreads = findViewById(R.id.cardMyThreads);
@@ -75,17 +77,11 @@ public class ForumHomeActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("Community Forum");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
 
-        // Xử lý menu icon click (nếu có drawer)
-        ImageView menuIcon = toolbar.findViewById(R.id.toolbar).getRootView().findViewById(R.id.menu_icon);
-        if (menuIcon != null) {
-            menuIcon.setOnClickListener(v -> {
-                // TODO: Open navigation drawer
-                Toast.makeText(this, "Open menu", Toast.LENGTH_SHORT).show();
-            });
-        }
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     private void setupRecyclerView() {
@@ -107,53 +103,44 @@ public class ForumHomeActivity extends AppCompatActivity {
         });
 
         // Hot Threads RecyclerView
-        rvHotThreads.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-        hotThreadsAdapter = new ThreadAdapter(this, hotThreadsList);
+        rvHotThreads.setLayoutManager(new LinearLayoutManager(
+                this, LinearLayoutManager.HORIZONTAL, false
+        ));
+        hotThreadsAdapter = new HotThreadAdapter(this, hotThreadsList);
         rvHotThreads.setAdapter(hotThreadsAdapter);
 
-        hotThreadsAdapter.setOnItemClickListener(new ThreadAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(ForumThread thread) {
-                openThreadDetail(thread);
-            }
-
-            @Override
-            public void onAuthorClick(String authorId) {
-                openUserProfile(authorId);
-            }
-
-            @Override
-            public void onCategoryClick(String categoryId) {
-                // Do nothing or open category
-            }
+        hotThreadsAdapter.setOnThreadClickListener(thread -> {
+            openThreadDetail(thread);
         });
     }
 
     private void loadCategories() {
-        progressBar.setVisibility(View.VISIBLE);
+        progressIndicator.setVisibility(View.VISIBLE);
 
         forumService.getAllCategories(new ForumFirebaseService.DataCallback<List<ForumCategory>>() {
             @Override
             public void onSuccess(List<ForumCategory> result) {
-                progressBar.setVisibility(View.GONE);
+                progressIndicator.setVisibility(View.GONE);
                 categoryList.clear();
                 categoryList.addAll(result);
                 categoryAdapter.notifyDataSetChanged();
+
+                if (categoryList.isEmpty()) {
+                    loadSampleCategories();
+                }
             }
 
             @Override
             public void onError(String error) {
-                progressBar.setVisibility(View.GONE);
+                progressIndicator.setVisibility(View.GONE);
                 Toast.makeText(ForumHomeActivity.this,
-                        "Error loading categories: " + error, Toast.LENGTH_SHORT).show();
-                // Load sample categories as fallback
+                        "⚠️ Connection issue", Toast.LENGTH_SHORT).show();
                 loadSampleCategories();
             }
         });
     }
 
     private void loadSampleCategories() {
-        // Sample data for testing
         categoryList.clear();
         categoryList.add(new ForumCategory(
                 "general",
@@ -163,16 +150,6 @@ public class ForumHomeActivity extends AppCompatActivity {
                 234,
                 1542
         ));
-
-        categoryList.add(new ForumCategory(
-                "help",
-                "Room Help & Tips",
-                "Get help with specific rooms and challenges",
-                "ic_help_circle",
-                512,
-                3241
-        ));
-
         categoryList.add(new ForumCategory(
                 "ctf",
                 "CTF Discussions",
@@ -181,7 +158,6 @@ public class ForumHomeActivity extends AppCompatActivity {
                 189,
                 942
         ));
-
         categoryList.add(new ForumCategory(
                 "writeups",
                 "Write-ups & Guides",
@@ -190,69 +166,142 @@ public class ForumHomeActivity extends AppCompatActivity {
                 421,
                 2134
         ));
-
+        categoryList.add(new ForumCategory(
+                "help",
+                "Room Help & Tips",
+                "Get help with specific rooms and challenges",
+                "ic_help_circle",
+                512,
+                3241
+        ));
+        categoryList.add(new ForumCategory(
+                "bugbounty",
+                "Bug Bounty",
+                "Discuss bug bounty programs and findings",
+                "ic_bug",
+                156,
+                783
+        ));
         categoryAdapter.notifyDataSetChanged();
     }
 
     private void loadHotThreads() {
-        // For now, load sample hot threads
+        progressIndicator.setVisibility(View.VISIBLE);
+
+        forumService.getLatestThreads(5, new ForumFirebaseService.DataCallback<List<ForumThread>>() {
+            @Override
+            public void onSuccess(List<ForumThread> result) {
+                progressIndicator.setVisibility(View.GONE);
+                hotThreadsList.clear();
+                hotThreadsList.addAll(result);
+                hotThreadsAdapter.notifyDataSetChanged();
+
+                if (hotThreadsList.isEmpty()) {
+                    loadSampleHotThreads();
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                progressIndicator.setVisibility(View.GONE);
+                loadSampleHotThreads();
+                Log.e("ForumHomeActivity", "Error loading hot threads: " + error);
+            }
+        });
+    }
+
+    private void loadSampleHotThreads() {
         hotThreadsList.clear();
 
-        hotThreadsList.add(new ForumThread(
-                "Best practices for SQL injection prevention?",
-                "Discuss best practices for preventing SQL injection attacks...",
-                "user123",
-                "SecurityNinja",
-                "general",
-                "General Discussion"
-        ));
-        hotThreadsList.get(0).setId("1");
-        hotThreadsList.get(0).setUpvotes(342);
-        hotThreadsList.get(0).setViews(1234);
-        hotThreadsList.get(0).setReplyCount(42);
-        hotThreadsList.get(0).setSolved(true);
+        // Thread 1
+        ForumThread thread1 = new ForumThread();
+        thread1.setId("1");
+        thread1.setTitle("CTF 2024 Winter Championship - Discussion");
+        thread1.setContent("Official discussion thread for CTF 2024 Winter Championship...");
+        thread1.setAuthorId("user789");
+        thread1.setAuthorName("CTFMaster");
+        thread1.setCategoryId("ctf");
+        thread1.setCategoryName("CTF Discussions");
+        thread1.setUpvotes(87);
+        thread1.setViews(2314);
+        thread1.setReplyCount(63);
+        thread1.setSolved(true);
+        thread1.setHot(true);
+        thread1.setLastActivity(System.currentTimeMillis() - (3 * 60 * 60 * 1000)); // 3 hours ago
+        hotThreadsList.add(thread1);
 
-        hotThreadsList.add(new ForumThread(
-                "Stuck on Web App Security Room - Task 5",
-                "Need help with Web App Security Room Task 5...",
-                "user456",
-                "BeginnerHacker",
-                "help",
-                "Room Help & Tips"
-        ));
-        hotThreadsList.get(1).setId("2");
-        hotThreadsList.get(1).setUpvotes(15);
-        hotThreadsList.get(1).setViews(542);
-        hotThreadsList.get(1).setReplyCount(15);
+        // Thread 2
+        ForumThread thread2 = new ForumThread();
+        thread2.setId("2");
+        thread2.setTitle("Complete Guide: Linux Privilege Escalation");
+        thread2.setContent("Complete step-by-step guide for Linux privilege escalation...");
+        thread2.setAuthorId("user456");
+        thread2.setAuthorName("L33tHacker");
+        thread2.setCategoryId("writeups");
+        thread2.setCategoryName("Write-ups & Guides");
+        thread2.setUpvotes(342);
+        thread2.setViews(2847);
+        thread2.setReplyCount(42);
+        thread2.setHot(true);
+        thread2.setLastActivity(System.currentTimeMillis() - (2 * 60 * 60 * 1000)); // 2 hours ago
+        hotThreadsList.add(thread2);
 
-        hotThreadsList.add(new ForumThread(
-                "CTF 2024 Winter Championship - Discussion",
-                "Discussion thread for CTF 2024 Winter Championship...",
-                "user789",
-                "CTFMaster",
-                "ctf",
-                "CTF Discussions"
-        ));
-        hotThreadsList.get(2).setId("3");
-        hotThreadsList.get(2).setUpvotes(87);
-        hotThreadsList.get(2).setViews(2314);
-        hotThreadsList.get(2).setReplyCount(87);
+        // Thread 3
+        ForumThread thread3 = new ForumThread();
+        thread3.setId("3");
+        thread3.setTitle("How to set up a home penetration testing lab?");
+        thread3.setContent("Beginner-friendly guide to setting up a home lab...");
+        thread3.setAuthorId("user123");
+        thread3.setAuthorName("CyberStudent");
+        thread3.setCategoryId("general");
+        thread3.setCategoryName("General Discussion");
+        thread3.setUpvotes(125);
+        thread3.setViews(891);
+        thread3.setReplyCount(28);
+        thread3.setHot(true);
+        thread3.setLastActivity(System.currentTimeMillis() - (45 * 60 * 1000)); // 45 mins ago
+        hotThreadsList.add(thread3);
 
         hotThreadsAdapter.notifyDataSetChanged();
     }
 
     private void loadForumStats() {
-        // For now, set sample stats
-        tvTotalThreads.setText("1.2K");
-        tvActiveUsers.setText("342");
+        forumService.getForumStats(new ForumFirebaseService.DataCallback<Map<String, Object>>() {
+            @Override
+            public void onSuccess(Map<String, Object> result) {
+                Object totalThreads = result.get("totalThreads");
+                if (totalThreads != null) {
+                    long threads = (totalThreads instanceof Long) ? (Long) totalThreads :
+                            ((Integer) totalThreads).longValue();
+                    tvTotalThreads.setText(formatNumber(threads));
+                }
 
-        // TODO: Fetch real stats from Firebase
-        // In real app, you would query Firestore for total thread count
-        // and active users count (users online in last 24 hours)
+                Object activeUsers = result.get("activeUsers");
+                if (activeUsers != null) {
+                    long users = (activeUsers instanceof Long) ? (Long) activeUsers :
+                            ((Integer) activeUsers).longValue();
+                    tvActiveUsers.setText(formatNumber(users));
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                tvTotalThreads.setText("1.2K");
+                tvActiveUsers.setText("342");
+            }
+        });
+    }
+
+    private String formatNumber(long number) {
+        if (number >= 1000000) {
+            return String.format("%.1fM", number / 1000000.0);
+        } else if (number >= 1000) {
+            return String.format("%.1fK", number / 1000.0);
+        }
+        return String.valueOf(number);
     }
 
     private void setupListeners() {
-        // Search functionality
         etSearch.setOnEditorActionListener((v, actionId, event) -> {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                 String query = etSearch.getText().toString().trim();
@@ -264,74 +313,33 @@ public class ForumHomeActivity extends AppCompatActivity {
             return false;
         });
 
-        // New Post FAB
-        fabNewPost.setOnClickListener(v -> {
-            if (forumService.isUserAuthenticated()) {
-                startActivity(new Intent(this, CreatePostActivity.class));
-            } else {
-                showLoginRequiredMessage("create a post");
-            }
-        });
+        fabNewPost.setOnClickListener(v -> handleNewPost());
+        cardNewPost.setOnClickListener(v -> handleNewPost());
 
-        // New Post Card
-        cardNewPost.setOnClickListener(v -> {
-            if (forumService.isUserAuthenticated()) {
-                startActivity(new Intent(this, CreatePostActivity.class));
-            } else {
-                showLoginRequiredMessage("create a post");
-            }
-        });
-
-        // My Threads Card
         cardMyThreads.setOnClickListener(v -> {
             if (forumService.isUserAuthenticated()) {
                 openMyThreads();
             } else {
-                showLoginRequiredMessage("view your threads");
+                showLoginRequiredMessage("view your archive");
             }
         });
 
-        // View All Hot Topics
         tvViewAllHot.setOnClickListener(v -> {
-            // Open all hot threads in a list
             Intent intent = new Intent(this, ForumThreadListActivity.class);
             intent.putExtra("filter", "hot");
-            intent.putExtra("category_name", "Hot Topics");
+            intent.putExtra("title", "Active Incidents");
             startActivity(intent);
         });
+
     }
 
-    private void showCategoryContextMenu(ForumCategory category, View anchorView) {
-        // Create popup menu
-        androidx.appcompat.widget.PopupMenu popupMenu = new androidx.appcompat.widget.PopupMenu(this, anchorView);
-        popupMenu.getMenuInflater().inflate(R.menu.menu_category_context, popupMenu.getMenu());
 
-        popupMenu.setOnMenuItemClickListener(item -> {
-            int id = item.getItemId();
-
-            if (id == R.id.menu_view) {
-                openThreadList(category);
-                return true;
-            } else if (id == R.id.menu_view_new) {
-                openCategoryWithFilter(category, "new");
-                return true;
-            } else if (id == R.id.menu_mark_read) {
-                markCategoryAsRead(category);
-                return true;
-            } else if (id == R.id.menu_notifications) {
-                showNotificationSettings(category);
-                return true;
-            } else if (id == R.id.menu_copy_link) {
-                copyCategoryLink(category);
-                return true;
-            } else if (id == R.id.menu_share) {
-                shareCategory(category);
-                return true;
-            }
-            return false;
-        });
-
-        popupMenu.show();
+    private void handleNewPost() {
+        if (forumService.isUserAuthenticated()) {
+            startActivity(new Intent(this, CreatePostActivity.class));
+        } else {
+            showLoginRequiredMessage("create a post");
+        }
     }
 
     private void openThreadList(ForumCategory category) {
@@ -348,83 +356,56 @@ public class ForumHomeActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private void openCategoryWithFilter(ForumCategory category, String filter) {
-        Intent intent = new Intent(this, ForumThreadListActivity.class);
-        intent.putExtra("category_id", category.getId());
-        intent.putExtra("category_name", category.getName());
-        intent.putExtra("filter", filter);
-        startActivity(intent);
-    }
-
     private void openMyThreads() {
         Intent intent = new Intent(this, ForumThreadListActivity.class);
         intent.putExtra("filter", "my");
-        intent.putExtra("category_name", "My Threads");
+        intent.putExtra("title", "My Archive");
         intent.putExtra("user_id", forumService.getCurrentUserId());
         startActivity(intent);
-    }
-
-    private void openUserProfile(String userId) {
-        // TODO: Open user profile activity
-        Toast.makeText(this, "Opening user profile: " + userId, Toast.LENGTH_SHORT).show();
     }
 
     private void searchThreads(String query) {
         Intent intent = new Intent(this, ForumThreadListActivity.class);
         intent.putExtra("search_query", query);
+        intent.putExtra("title", "Search: " + query);
         startActivity(intent);
     }
 
-    private void markCategoryAsRead(ForumCategory category) {
-        // TODO: Implement mark category as read
-        Toast.makeText(this,
-                "Marked " + category.getName() + " as read",
-                Toast.LENGTH_SHORT).show();
-    }
+    private void showCategoryContextMenu(ForumCategory category, View anchorView) {
+        androidx.appcompat.widget.PopupMenu popupMenu =
+                new androidx.appcompat.widget.PopupMenu(this, anchorView);
+        popupMenu.getMenuInflater().inflate(R.menu.menu_category_context, popupMenu.getMenu());
 
-    private void showNotificationSettings(ForumCategory category) {
-        // TODO: Show notification settings dialog
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
-        builder.setTitle("Notification Settings for " + category.getName())
-                .setItems(new String[]{"All posts", "Only mentions", "None"}, (dialog, which) -> {
-                    String[] options = {"All posts", "Only mentions", "None"};
-                    Toast.makeText(this,
-                            "Set to: " + options[which],
-                            Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+        popupMenu.setOnMenuItemClickListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.menu_view) {
+                openThreadList(category);
+                return true;
+            } else if (id == R.id.menu_copy_link) {
+                copyCategoryLink(category);
+                return true;
+            }
+            return false;
+        });
+        popupMenu.show();
     }
 
     private void copyCategoryLink(ForumCategory category) {
-        // In real app, this would be a real URL
         String link = "https://cyberlearn.com/forum/category/" + category.getId();
-
-        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        android.content.ClipboardManager clipboard =
+                (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
         android.content.ClipData clip = android.content.ClipData.newPlainText("Forum Link", link);
         clipboard.setPrimaryClip(clip);
-
-        Toast.makeText(this, "Link copied to clipboard", Toast.LENGTH_SHORT).show();
-    }
-
-    private void shareCategory(ForumCategory category) {
-        String shareText = "Check out " + category.getName() + " on CyberLearn Forum: " +
-                "https://cyberlearn.com/forum/category/" + category.getId();
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_SUBJECT, category.getName());
-        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-        startActivity(Intent.createChooser(shareIntent, "Share Category"));
+        Toast.makeText(this, "Link copied", Toast.LENGTH_SHORT).show();
     }
 
     private void showLoginRequiredMessage(String action) {
-        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(this);
-        builder.setTitle("Login Required")
+        androidx.appcompat.app.AlertDialog.Builder builder =
+                new androidx.appcompat.app.AlertDialog.Builder(this);
+        builder.setTitle("🔐 Login Required")
                 .setMessage("Please login to " + action)
                 .setPositiveButton("Login", (dialog, which) -> {
-                    // TODO: Navigate to login screen
-                    Toast.makeText(this, "Redirect to login...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Go to login...", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -433,7 +414,7 @@ public class ForumHomeActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Refresh data if needed
-        // You can add logic here to refresh categories or hot threads
+        loadHotThreads();
+        loadForumStats();
     }
 }

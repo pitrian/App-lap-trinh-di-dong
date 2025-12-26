@@ -3,142 +3,384 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/cyber_background">
+    android:background="@drawable/cyber_dark_background">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="@color/cyber_card_background"
-            app:titleTextColor="@color/cyber_text_primary"
+            android:background="#111825"
+            app:titleTextColor="#FFFFFF"
             app:navigationIcon="@drawable/ic_back"
             app:title="Create New Post" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:fillViewport="true">
 
         <LinearLayout
+            android:id="@+id/mainContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="16dp">
 
-            <!-- Category Selection -->
+            <!-- Back Link -->
             <TextView
+                android:id="@+id/tvBackLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="← Back to Forum"
+                android:textColor="#3498DB"
+                android:textSize="12sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- App Title -->
+            <TextView
+                android:id="@+id/tvAppTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CyberLearn"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Subtitle -->
+            <TextView
+                android:id="@+id/tvSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Share your knowledge with the community"
+                android:textColor="#7F8C8D"
+                android:textSize="12sp"
+                android:layout_marginBottom="32dp" />
+
+            <!-- Category -->
+            <TextView
+                android:id="@+id/tvCategoryLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Category"
-                android:textColor="@color/cyber_text_primary"
-                android:textSize="14sp"
+                android:textColor="#3498DB"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
-            <Spinner
-                android:id="@+id/spinnerCategory"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCategory"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@drawable/bg_spinner"
-                android:layout_marginBottom="20dp" />
+                android:layout_height="52dp"
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="#15202B"
+                app:strokeColor="#1E3A5F"
+                app:strokeWidth="1dp">
+
+                <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/spinnerCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@android:color/transparent"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:textColor="#FFFFFF"
+                    android:entries="@array/forum_categories"
+                    android:prompt="@string/select_category" />
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Title -->
             <TextView
+                android:id="@+id/tvTitleLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Title"
-                android:textColor="@color/cyber_text_primary"
-                android:textSize="14sp"
+                android:textColor="#3498DB"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
-            <EditText
-                android:id="@+id/etTitle"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter your post title"
-                android:textColor="@color/cyber_text_primary"
-                android:textColorHint="@color/cyber_text_secondary"
-                android:background="@drawable/bg_edittext"
-                android:padding="16dp"
-                android:maxLines="2"
-                android:imeOptions="actionNext"
-                android:layout_marginBottom="20dp" />
+                android:layout_marginBottom="24dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="#15202B"
+                app:strokeColor="#1E3A5F"
+                app:strokeWidth="1dp">
+
+                <EditText
+                    android:id="@+id/etTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Enter a clear and descriptive title"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#5D6D7E"
+                    android:background="@android:color/transparent"
+                    android:padding="16dp"
+                    android:maxLines="2"
+                    android:imeOptions="actionNext"
+                    android:textSize="14sp" />
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Content -->
             <TextView
+                android:id="@+id/tvContentLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Content"
-                android:textColor="@color/cyber_text_primary"
-                android:textSize="14sp"
+                android:textColor="#3498DB"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
 
-            <EditText
-                android:id="@+id/etContent"
+            <!-- Formatting Toolbar -->
+            <LinearLayout
+                android:id="@+id/toolbarFormat"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:hint="Write your post content here..."
-                android:textColor="@color/cyber_text_primary"
-                android:textColorHint="@color/cyber_text_secondary"
-                android:background="@drawable/bg_edittext"
-                android:padding="16dp"
-                android:gravity="top"
-                android:inputType="textMultiLine"
-                android:minLines="10"
-                android:maxLines="50"
-                android:scrollbars="vertical"
-                android:layout_marginBottom="20dp" />
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:background="#15202B"
+                android:paddingHorizontal="16dp"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="1dp">
 
-            <!-- Tags -->
+                <!-- Bold -->
+                <TextView
+                    android:id="@+id/btnBold"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:text="B"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_marginEnd="16dp" />
+
+                <!-- Italic -->
+                <TextView
+                    android:id="@+id/btnItalic"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:text="I"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="italic"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_marginEnd="16dp" />
+
+                <!-- Arrow (➡) -->
+                <TextView
+                    android:id="@+id/btnArrow"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:text="➡"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_marginEnd="16dp" />
+
+                <!-- Speech Bubble (💬) -->
+                <TextView
+                    android:id="@+id/btnSpeech"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:text="💬"
+                    android:textColor="#FFFFFF"
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:layout_marginEnd="16dp" />
+
+                <!-- Space -->
+                <View
+                    android:id="@+id/spaceToolbar"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- Preview -->
+                <TextView
+                    android:id="@+id/btnPreview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Preview"
+                    android:textColor="#3498DB"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="8dp" />
+            </LinearLayout>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardContent"
+                android:layout_width="match_parent"
+                android:layout_height="240dp"
+                android:layout_marginBottom="24dp"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.Card.BottomRounded"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="#15202B"
+                app:strokeColor="#1E3A5F"
+                app:strokeWidth="1dp">
+
+                <EditText
+                    android:id="@+id/etContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="Write your post content here...\nSupports Markdown formatting"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#5D6D7E"
+                    android:background="@android:color/transparent"
+                    android:padding="16dp"
+                    android:gravity="top"
+                    android:inputType="textMultiLine"
+                    android:minLines="10"
+                    android:maxLines="50"
+                    android:scrollbars="vertical"
+                    android:textSize="14sp" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Markdown Tips -->
             <TextView
+                android:id="@+id/tvMarkdownTips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="# Markdown Tips\n**bold** for bold text\n*italic* for italic text\n`code` for code blocks\n- list for bullet points"
+                android:textColor="#7F8C8D"
+                android:textSize="11sp"
+                android:lineSpacingExtra="4dp"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Divider -->
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#1E3A5F"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Tags Section -->
+            <TextView
+                android:id="@+id/tvTagsLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tags (optional)"
-                android:textColor="@color/cyber_text_primary"
-                android:textSize="14sp"
+                android:textColor="#3498DB"
+                android:textSize="13sp"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="16dp" />
 
-            <EditText
-                android:id="@+id/etTags"
+            <!-- Tag Input -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardTagInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="web-security, ctf, help (comma separated)"
-                android:textColor="@color/cyber_text_primary"
-                android:textColorHint="@color/cyber_text_secondary"
-                android:background="@drawable/bg_edittext"
-                android:padding="16dp"
-                android:imeOptions="actionDone"
-                android:layout_marginBottom="32dp" />
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="#15202B"
+                app:strokeColor="#1E3A5F"
+                app:strokeWidth="1dp">
 
-            <!-- Submit Button -->
-            <Button
-                android:id="@+id/btnSubmit"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Create Post"
-                android:textColor="@color/cyber_text_primary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:background="@drawable/bg_button_green"
-                android:elevation="4dp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-            <ProgressBar
-                android:id="@+id/progressBar"
+                    <EditText
+                        android:id="@+id/etTagInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Add a tag (press Enter)"
+                        android:textColor="#FFFFFF"
+                        android:textColorHint="#5D6D7E"
+                        android:background="@android:color/transparent"
+                        android:imeOptions="actionDone"
+                        android:textSize="14sp" />
+
+                    <!-- Chip Container -->
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupTags"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Tag Counter -->
+            <TextView
+                android:id="@+id/tvTagCounter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="You can add up to 5 tags (5 remaining)"
+                android:textColor="#7F8C8D"
+                android:textSize="10sp"
+                android:layout_marginBottom="32dp" />
+
+            <!-- Action Buttons -->
+            <LinearLayout
+                android:id="@+id/buttonContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnCancel"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Cancel"
+                    android:textColor="#95A5A6"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    app:cornerRadius="10dp"
+                    app:strokeColor="#34495E"
+                    app:strokeWidth="1dp"
+                    app:backgroundColor="#111825" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnPublish"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Publish Post"
+                    android:textColor="#FFFFFF"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    app:cornerRadius="10dp"
+                    app:backgroundColor="#3498DB" />
+            </LinearLayout>
+
+            <!-- Progress Bar -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
                 android:layout_gravity="center"
                 android:layout_marginTop="24dp"
+                android:indeterminateTint="#3498DB"
                 android:visibility="gone" />
 
         </LinearLayout>

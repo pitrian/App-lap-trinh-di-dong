@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/cardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/cyber_card_background">
+    android:layout_marginBottom="12dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="2dp"
+    app:cardBackgroundColor="#1C2128">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,165 +15,109 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Featured badge -->
-        <TextView
-            android:id="@+id/tvFeatured"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="✨ Featured"
-            android:textColor="@color/cyber_orange_premium"
-            android:textSize="10sp"
-            android:textStyle="bold"
-            android:background="@drawable/bg_featured_badge"
-            android:paddingHorizontal="8dp"
-            android:paddingVertical="2px"
-            android:layout_marginBottom="8dp"
-            android:visibility="gone" />
-
-        <!-- Title -->
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Advanced SQL Injection Techniques"
-            android:textColor="@color/cyber_text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:maxLines="2"
-            android:ellipsize="end"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Author and verification -->
+        <!-- Title Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/tvTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Complete Guide: Linux Privilege Escalation"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:maxLines="2"
+                android:ellipsize="end" />
+
+            <!-- Verified Badge -->
+            <ImageView
+                android:id="@+id/ivVerified"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_verified"
+                app:tint="#39BF8F"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <!-- Author & Difficulty -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
             android:layout_marginBottom="8dp">
 
             <TextView
                 android:id="@+id/tvAuthor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SecurityExpert"
-                android:textColor="@color/cyber_text_secondary"
+                android:text="L33tHacker"
+                android:textColor="#8B949E"
                 android:textSize="12sp" />
 
-            <ImageView
-                android:id="@+id/ivVerified"
-                android:layout_width="16dp"
-                android:layout_height="16dp"
-                android:src="@drawable/ic_verified"
-                android:tint="@color/cyber_green_main"
-                android:layout_marginStart="4dp"
-                android:visibility="gone" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
             <TextView
-                android:id="@+id/tvTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2 days ago"
-                android:textColor="@color/cyber_text_secondary"
-                android:textSize="11sp" />
-
-        </LinearLayout>
-
-        <!-- Room and difficulty -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="8dp">
-
-            <TextView
-                android:id="@+id/tvRoom"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Web Security Room"
-                android:textColor="@color/cyber_green_main"
-                android:textSize="12sp"
-                android:background="@drawable/bg_room_badge"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2px" />
+                android:text=" • "
+                android:textColor="#8B949E"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/tvDifficulty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Advanced"
-                android:textColor="@color/cyber_red"
+                android:text="Intermediate"
+                android:textColor="#39BF8F"
                 android:textSize="12sp"
-                android:textStyle="bold"
-                android:background="@drawable/bg_difficulty_advanced"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="2px"
-                android:layout_marginStart="8dp" />
-
-            <View
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1" />
-
-            <!-- Like button -->
-            <ImageView
-                android:id="@+id/btnLike"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_like_outline"
-                android:tint="@color/cyber_text_secondary"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp" />
+                android:textStyle="bold" />
 
         </LinearLayout>
 
-        <!-- Tags -->
+        <!-- Room Name -->
         <TextView
-            android:id="@+id/tvTags"
-            android:layout_width="match_parent"
+            android:id="@+id/tvRoom"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="#SQLInjection #WebSecurity #Database"
-            android:textColor="@color/cyber_text_secondary"
-            android:textSize="11sp"
-            android:maxLines="2"
-            android:ellipsize="end"
+            android:text="Linux Fundamentals"
+            android:textColor="#8B5CF6"
+            android:textSize="12sp"
             android:layout_marginBottom="12dp" />
 
-        <!-- Stats -->
+        <!-- Stats Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center">
+            android:gravity="center_vertical">
 
             <!-- Likes -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:id="@+id/btnLike"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_like_outline"
+                    app:tint="#8B949E" />
 
                 <TextView
                     android:id="@+id/tvLikes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="142"
-                    android:textColor="@color/cyber_text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Likes"
-                    android:textColor="@color/cyber_text_secondary"
-                    android:textSize="11sp" />
+                    android:text="342"
+                    android:textColor="#8B949E"
+                    android:textSize="12sp"
+                    android:layout_marginStart="6dp" />
 
             </LinearLayout>
 
@@ -183,24 +126,23 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_eye"
+                    app:tint="#8B949E" />
 
                 <TextView
                     android:id="@+id/tvViews"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="1.2K"
-                    android:textColor="@color/cyber_text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Views"
-                    android:textColor="@color/cyber_text_secondary"
-                    android:textSize="11sp" />
+                    android:text="2.8K"
+                    android:textColor="#8B949E"
+                    android:textSize="12sp"
+                    android:layout_marginStart="6dp" />
 
             </LinearLayout>
 
@@ -209,26 +151,34 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:src="@drawable/ic_comment"
+                    app:tint="#8B949E" />
 
                 <TextView
                     android:id="@+id/tvComments"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="24"
-                    android:textColor="@color/cyber_text_primary"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Comments"
-                    android:textColor="@color/cyber_text_secondary"
-                    android:textSize="11sp" />
+                    android:text="63"
+                    android:textColor="#8B949E"
+                    android:textSize="12sp"
+                    android:layout_marginStart="6dp" />
 
             </LinearLayout>
+
+            <!-- Date -->
+            <TextView
+                android:id="@+id/tvDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2 hours ago"
+                android:textColor="#8B949E"
+                android:textSize="11sp" />
 
         </LinearLayout>
 
