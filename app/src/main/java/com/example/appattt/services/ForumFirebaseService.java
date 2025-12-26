@@ -114,20 +114,27 @@ public class ForumFirebaseService {
 
 
     public void getThreadById(String threadId, DataCallback<ForumThread> callback) {
+        if (threadId == null || threadId.isEmpty()) {
+            callback.onError("Thread ID is empty");
+            return;
+        }
+
         db.collection(COLLECTION_THREADS)
                 .document(threadId)
                 .get()
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        ForumThread thread = task.getResult().toObject(ForumThread.class);
-                        if (thread != null) {
-                            thread.setId(task.getResult().getId());
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            // Dùng factory method mới
+                            ForumThread thread = ForumThread.fromDocument(document);
                             callback.onSuccess(thread);
                         } else {
-                            callback.onError("Thread data is null");
+                            callback.onError("Thread not found");
                         }
                     } else {
-                        callback.onError("Thread not found");
+                        callback.onError(task.getException() != null ?
+                                task.getException().getMessage() : "Unknown error");
                     }
                 });
     }
@@ -644,27 +651,28 @@ public class ForumFirebaseService {
         threadData.put("solved", thread.isSolved());
         threadData.put("hot", thread.isHot());
         threadData.put("pinned", thread.isPinned());
-        threadData.put("createdAt", thread.getCreatedAt());
-        threadData.put("lastActivity", thread.getLastActivity());
 
-        // Lưu tags dưới dạng List<String>
+        // SỬA: Dùng long thay vì Date
+        threadData.put("createdAt", System.currentTimeMillis());
+        threadData.put("lastActivity", System.currentTimeMillis());
+
+        // Tags
         if (thread.getTags() != null && !thread.getTags().isEmpty()) {
             threadData.put("tags", thread.getTags());
         } else {
             threadData.put("tags", new ArrayList<String>());
         }
 
-        db.collection("forum_threads")
+        db.collection(COLLECTION_THREADS)
                 .add(threadData)
                 .addOnSuccessListener(documentReference -> {
-                    // Cập nhật thread ID
                     thread.setId(documentReference.getId());
-
-                    // Cập nhật thống kê forum
-                    updateForumStats(1, 0);
                     callback.onSuccess();
                 })
-                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error creating thread", e);
+                    callback.onError(e.getMessage());
+                });
     }
 
     private void updateForumStats(int threadIncrement, int replyIncrement) {
@@ -797,4 +805,6 @@ public class ForumFirebaseService {
                     callback.onError(e.getMessage());
                 });
     }
+
+
 }

@@ -1,6 +1,9 @@
 package com.example.appattt.models;
 
 import com.example.appattt.utils.DateUtils;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -136,7 +139,7 @@ public class ForumThread {
         this.upvotes++;
     }
 
-    // Thêm phương thức để giảm upvotes
+    // Thêm phương thức đểx x    giảm upvotes
     public void decrementUpvotes() {
         this.upvotes = Math.max(0, this.upvotes - 1);
     }
@@ -145,5 +148,61 @@ public class ForumThread {
     public void incrementReplyCount() {
         this.replyCount++;
         this.lastActivity = System.currentTimeMillis(); // Cập nhật lastActivity khi có reply mới
+    }
+
+    public static ForumThread fromDocument(DocumentSnapshot document) {
+        ForumThread thread = new ForumThread();
+        thread.setId(document.getId());
+        thread.setTitle(document.getString("title"));
+        thread.setContent(document.getString("content"));
+        thread.setAuthorId(document.getString("authorId"));
+        thread.setAuthorName(document.getString("authorName"));
+        thread.setCategoryId(document.getString("categoryId"));
+        thread.setCategoryName(document.getString("categoryName"));
+
+        // Xử lý số
+        thread.setUpvotes(document.getLong("upvotes") != null ?
+                document.getLong("upvotes").intValue() : 0);
+        thread.setViews(document.getLong("views") != null ?
+                document.getLong("views").intValue() : 0);
+        thread.setReplyCount(document.getLong("replyCount") != null ?
+                document.getLong("replyCount").intValue() : 0);
+
+        // Xử lý boolean
+        thread.setSolved(document.getBoolean("solved") != null ?
+                document.getBoolean("solved") : false);
+        thread.setHot(document.getBoolean("hot") != null ?
+                document.getBoolean("hot") : false);
+        thread.setPinned(document.getBoolean("pinned") != null ?
+                document.getBoolean("pinned") : false);
+
+        // Xử lý timestamp
+        Object createdAt = document.get("createdAt");
+        if (createdAt instanceof Long) {
+            thread.setCreatedAt((Long) createdAt);
+        } else if (createdAt instanceof com.google.firebase.Timestamp) {
+            thread.setCreatedAt(((com.google.firebase.Timestamp) createdAt).toDate().getTime());
+        }
+
+        Object lastActivity = document.get("lastActivity");
+        if (lastActivity instanceof Long) {
+            thread.setLastActivity((Long) lastActivity);
+        } else if (lastActivity instanceof com.google.firebase.Timestamp) {
+            thread.setLastActivity(((com.google.firebase.Timestamp) lastActivity).toDate().getTime());
+        }
+
+        // Xử lý tags
+        Object tags = document.get("tags");
+        if (tags instanceof List) {
+            List<String> tagList = new ArrayList<>();
+            for (Object tag : (List<?>) tags) {
+                if (tag instanceof String) {
+                    tagList.add((String) tag);
+                }
+            }
+            thread.setTags(tagList);
+        }
+
+        return thread;
     }
 }

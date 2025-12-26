@@ -71,7 +71,8 @@ public class ReplyDialogFragment extends DialogFragment {
         LayoutInflater inflater = requireActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_reply, null);
 
-        EditText etContent = view.findViewById(R.id.etContent);
+        // ★ SỬA: dùng đúng id trong XML
+        EditText etContent = view.findViewById(R.id.etReplyContent);
 
         builder.setView(view)
                 .setTitle(parentId == null ? "Reply to Thread" : "Reply to Comment")
@@ -90,7 +91,7 @@ public class ReplyDialogFragment extends DialogFragment {
                             return;
                         }
 
-                        // SỬA: Tạo ForumPost với 4 tham số như constructor yêu cầu
+                        // Tạo ForumPost
                         ForumPost post = new ForumPost(
                                 threadId,
                                 content,
@@ -98,16 +99,18 @@ public class ReplyDialogFragment extends DialogFragment {
                                 forumService.getCurrentUserName()
                         );
 
-                        // Set các thuộc tính bổ sung
+                        // Nếu là reply cho comment
                         if (parentId != null) {
                             post.setParentId(parentId);
-                            post.setDepth(1); // Độ sâu của reply là 1
+                            post.setDepth(1);
                         }
 
+                        // Gán category nếu có
                         if (categoryId != null) {
                             post.setCategoryId(categoryId);
                         }
 
+                        // Lưu Firestore
                         forumService.createPost(post, new ForumFirebaseService.EmptyCallback() {
                             @Override
                             public void onSuccess() {

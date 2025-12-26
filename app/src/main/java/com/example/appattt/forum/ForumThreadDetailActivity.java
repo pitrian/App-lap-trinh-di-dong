@@ -1,5 +1,6 @@
 package com.example.appattt.forum;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -21,38 +23,46 @@ import com.example.appattt.models.ForumPost;
 import com.example.appattt.models.ForumThread;
 import com.example.appattt.services.ForumFirebaseService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ForumThreadDetailActivity extends AppCompatActivity
         implements ReplyDialogFragment.OnReplyPostedListener {
 
+    // UI
     private Toolbar toolbar;
-    private TextView tvTitle, tvContent, tvAuthor, tvCategory, tvUpvotes, tvViews, tvReplyCount, tvTime;
-    private Button btnUpvote, btnBookmark;
-    private ImageView btnShare;
+    private TextView tvTitle, tvContent, tvAuthor, tvCategory,
+            tvUpvotes, tvViews, tvReplyCount, tvTime;
+    private ImageView btnUpvote, btnBookmark, btnShare;
     private RecyclerView rvComments;
     private ProgressBar progressBar;
     private FloatingActionButton fabReply;
     private Button btnMarkSolved;
 
+    // Data
     private String threadId;
     private ForumThread currentThread;
     private boolean isUpvoted = false;
     private boolean isBookmarked = false;
 
+    // Services / adapter
     private ForumFirebaseService forumService;
     private CommentAdapter commentAdapter;
-    private List<ForumPost> commentList = new ArrayList<>();
+    private final List<ForumPost> commentList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forum_thread_detail);
 
+        // Lấy threadId từ Intent
         threadId = getIntent().getStringExtra("thread_id");
-        if (threadId == null) {
+        if (threadId == null || threadId.isEmpty()) {
             Toast.makeText(this, "Thread not found", Toast.LENGTH_SHORT).show();
             finish();
             return;
@@ -67,7 +77,7 @@ public class ForumThreadDetailActivity extends AppCompatActivity
         loadComments();
         setupListeners();
 
-        // Increment view count
+        // Tăng view
         forumService.incrementThreadView(threadId);
     }
 
@@ -81,9 +91,12 @@ public class ForumThreadDetailActivity extends AppCompatActivity
         tvViews = findViewById(R.id.tvViews);
         tvReplyCount = findViewById(R.id.tvReplyCount);
         tvTime = findViewById(R.id.tvTime);
+
+        // 2 nút này là ImageView trong layout
         btnUpvote = findViewById(R.id.btnUpvote);
         btnBookmark = findViewById(R.id.btnBookmark);
         btnShare = findViewById(R.id.btnShare);
+
         rvComments = findViewById(R.id.rvComments);
         progressBar = findViewById(R.id.progressBar);
         fabReply = findViewById(R.id.fabReply);
@@ -141,51 +154,54 @@ public class ForumThreadDetailActivity extends AppCompatActivity
                 currentThread = thread;
                 updateThreadUI();
 
-                // Check if user has upvoted
-                forumService.checkThreadUpvote(threadId, new ForumFirebaseService.DataCallback<Boolean>() {
-                    @Override
-                    public void onSuccess(Boolean result) {
-                        isUpvoted = result;
-                        btnUpvote.setSelected(isUpvoted);
-                    }
+                // Kiểm tra đã upvote chưa
+                forumService.checkThreadUpvote(threadId,
+                        new ForumFirebaseService.DataCallback<Boolean>() {
+                            @Override
+                            public void onSuccess(Boolean result) {
+                                isUpvoted = result;
+                                btnUpvote.setSelected(isUpvoted);
+                            }
 
-                    @Override
-                    public void onError(String error) {
-                        // Ignore error
-                    }
-                });
+                            @Override
+                            public void onError(String error) {
+                                // bỏ qua, không critical
+                            }
+                        });
             }
 
             @Override
             public void onError(String error) {
                 progressBar.setVisibility(View.GONE);
                 Toast.makeText(ForumThreadDetailActivity.this,
-                        "Error loading thread: " + error, Toast.LENGTH_SHORT).show();
+                        "Error loading thread: " + error,
+                        Toast.LENGTH_SHORT).show();
                 finish();
             }
         });
     }
 
     private void loadComments() {
-        forumService.getPostsByThread(threadId, new ForumFirebaseService.DataCallback<List<ForumPost>>() {
-            @Override
-            public void onSuccess(List<ForumPost> result) {
-                commentList.clear();
-                commentList.addAll(result);
-                commentAdapter.notifyDataSetChanged();
+        forumService.getPostsByThread(threadId,
+                new ForumFirebaseService.DataCallback<List<ForumPost>>() {
+                    @Override
+                    public void onSuccess(List<ForumPost> result) {
+                        commentList.clear();
+                        commentList.addAll(result);
+                        commentAdapter.notifyDataSetChanged();
 
-                // Update reply count in UI
-                if (currentThread != null) {
-                    tvReplyCount.setText(String.valueOf(commentList.size()));
-                }
-            }
+                        if (currentThread != null) {
+                            tvReplyCount.setText(String.valueOf(commentList.size()));
+                        }
+                    }
 
-            @Override
-            public void onError(String error) {
-                Toast.makeText(ForumThreadDetailActivity.this,
-                        "Error loading comments: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(ForumThreadDetailActivity.this,
+                                "Error loading comments: " + error,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void updateThreadUI() {
@@ -200,14 +216,16 @@ public class ForumThreadDetailActivity extends AppCompatActivity
         tvReplyCount.setText(String.valueOf(currentThread.getReplyCount()));
         tvTime.setText(currentThread.getTimeAgo());
 
-        // Show/hide mark as solved button
         boolean isThreadAuthor = forumService.getCurrentUserId() != null &&
                 forumService.getCurrentUserId().equals(currentThread.getAuthorId());
-        btnMarkSolved.setVisibility(isThreadAuthor && !currentThread.isSolved() ? View.VISIBLE : View.GONE);
 
-        // Update toolbar title
+        // Chỉ tác giả thread mới thấy nút mark solved
+        btnMarkSolved.setVisibility(
+                isThreadAuthor && !currentThread.isSolved() ? View.VISIBLE : View.GONE);
+
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(currentThread.isSolved() ? "✓ Solved" : "Thread");
+            getSupportActionBar().setTitle(
+                    currentThread.isSolved() ? "✓ Solved" : "Thread");
         }
     }
 
@@ -225,17 +243,22 @@ public class ForumThreadDetailActivity extends AppCompatActivity
         });
 
         tvCategory.setOnClickListener(v -> {
-            // TODO: Open category
+            // Tạm thời chỉ show toast, sau này muốn mở màn CategoryDetail thì thêm Intent ở đây
+            if (currentThread != null) {
+                Toast.makeText(
+                        this,
+                        "Open category: " + currentThread.getCategoryName(),
+                        Toast.LENGTH_SHORT
+                ).show();
+            }
         });
 
-        btnMarkSolved.setOnClickListener(v -> {
-            showMarkSolvedDialog();
-        });
+        btnMarkSolved.setOnClickListener(v -> showMarkSolvedDialog());
 
-        btnShare.setOnClickListener(v -> {
-            // TODO: Share thread
-        });
+        btnShare.setOnClickListener(v -> shareThread());
     }
+
+    // ---------- THREAD ACTIONS ----------
 
     private void toggleThreadUpvote() {
         if (!forumService.isUserAuthenticated()) {
@@ -243,36 +266,66 @@ public class ForumThreadDetailActivity extends AppCompatActivity
             return;
         }
 
-        forumService.toggleThreadUpvote(threadId, new ForumFirebaseService.DataCallback<Boolean>() {
-            @Override
-            public void onSuccess(Boolean upvoted) {
-                isUpvoted = upvoted;
-                btnUpvote.setSelected(isUpvoted);
+        forumService.toggleThreadUpvote(threadId,
+                new ForumFirebaseService.DataCallback<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean upvoted) {
+                        isUpvoted = upvoted;
+                        btnUpvote.setSelected(isUpvoted);
 
-                // Update count
-                if (currentThread != null) {
-                    int newCount = currentThread.getUpvotes() + (upvoted ? 1 : -1);
-                    currentThread.setUpvotes(newCount);
-                    tvUpvotes.setText(String.valueOf(newCount));
-                }
-            }
+                        if (currentThread != null) {
+                            int delta = upvoted ? 1 : -1;
+                            int newCount = currentThread.getUpvotes() + delta;
+                            if (newCount < 0) newCount = 0;
+                            currentThread.setUpvotes(newCount);
+                            tvUpvotes.setText(String.valueOf(newCount));
+                        }
+                    }
 
-            @Override
-            public void onError(String error) {
-                Toast.makeText(ForumThreadDetailActivity.this,
-                        "Error: " + error, Toast.LENGTH_SHORT).show();
-            }
-        });
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(ForumThreadDetailActivity.this,
+                                "Error: " + error,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void toggleBookmark() {
+        if (!forumService.isUserAuthenticated()) {
+            Toast.makeText(this, "Please login to bookmark", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Hiện tại chỉ lưu trạng thái local + Toast.
+        // Nếu muốn lưu Firebase: tạo collection "forum_thread_bookmarks".
         isBookmarked = !isBookmarked;
         btnBookmark.setSelected(isBookmarked);
 
-        // TODO: Save bookmark to Firebase
-        Toast.makeText(this, isBookmarked ? "Bookmarked" : "Removed bookmark",
-                Toast.LENGTH_SHORT).show();
+        Toast.makeText(
+                this,
+                isBookmarked ? "Thread bookmarked" : "Bookmark removed",
+                Toast.LENGTH_SHORT
+        ).show();
     }
+
+    private void shareThread() {
+        if (currentThread == null) return;
+
+        String shareText = currentThread.getTitle() + "\n\n" +
+                currentThread.getContent();
+
+        android.content.Intent sendIntent = new android.content.Intent();
+        sendIntent.setAction(android.content.Intent.ACTION_SEND);
+        sendIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareText);
+        sendIntent.setType("text/plain");
+
+        android.content.Intent shareIntent =
+                android.content.Intent.createChooser(sendIntent, "Share thread");
+        startActivity(shareIntent);
+    }
+
+    // ---------- COMMENT ACTIONS ----------
 
     private void showReplyDialog(String parentPostId) {
         if (!forumService.isUserAuthenticated()) {
@@ -280,43 +333,151 @@ public class ForumThreadDetailActivity extends AppCompatActivity
             return;
         }
 
-        ReplyDialogFragment dialog = ReplyDialogFragment.newInstance(threadId, parentPostId);
+        ReplyDialogFragment dialog =
+                ReplyDialogFragment.newInstance(threadId, parentPostId);
         dialog.setOnReplyPostedListener(this);
         dialog.show(getSupportFragmentManager(), "reply_dialog");
     }
 
     private void toggleCommentUpvote(ForumPost comment) {
-        // TODO: Implement comment upvote
+        if (!forumService.isUserAuthenticated()) {
+            Toast.makeText(this, "Please login to upvote", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        forumService.togglePostUpvote(comment.getId(),
+                new ForumFirebaseService.DataCallback<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean result) {
+                        // Reload lại list comment cho chắc
+                        loadComments();
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        Toast.makeText(ForumThreadDetailActivity.this,
+                                "Error: " + error,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 
     private void openUserProfile(String userId) {
-        // TODO: Open user profile
+        if (userId == null || userId.isEmpty()) return;
+
+        // Nếu bạn có màn Profile riêng thì tạo Intent ở đây.
+        // Tạm thời chỉ Toast cho an toàn, tránh lỗi ClassNotFound.
+        Toast.makeText(
+                this,
+                "Opening user profile: " + userId,
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     private void markAsSolution(ForumPost comment) {
-        // TODO: Implement mark as solution
+        if (currentThread == null) return;
+
+        String currentUserId = forumService.getCurrentUserId();
+        if (currentUserId == null ||
+                !currentUserId.equals(currentThread.getAuthorId())) {
+            Toast.makeText(this,
+                    "Only thread author can mark solution",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Đánh dấu solved + lưu id comment giải quyết (solutionPostId)
+        FirebaseFirestore.getInstance()
+                .collection("forum_threads")
+                .document(threadId)
+                .update("solved", true,
+                        "solutionPostId", comment.getId())
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this,
+                            "Marked as solution",
+                            Toast.LENGTH_SHORT).show();
+
+                    btnMarkSolved.setVisibility(View.GONE);
+                    if (getSupportActionBar() != null) {
+                        getSupportActionBar().setTitle("✓ Solved");
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(this,
+                        "Error: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show());
     }
 
     private void reportComment(ForumPost comment) {
-        // TODO: Implement report
+        String currentUserId = forumService.getCurrentUserId();
+        if (currentUserId == null) {
+            Toast.makeText(this,
+                    "Please login to report",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Map<String, Object> report = new HashMap<>();
+        report.put("type", "comment");
+        report.put("threadId", threadId);
+        report.put("postId", comment.getId());
+        report.put("reporterId", currentUserId);
+        report.put("createdAt", new Date());
+
+        db.collection("forum_reports")
+                .add(report)
+                .addOnSuccessListener(ref -> Toast.makeText(this,
+                        "Reported comment",
+                        Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(this,
+                        "Error: " + e.getMessage(),
+                        Toast.LENGTH_SHORT).show());
     }
 
     private void showMarkSolvedDialog() {
-        // TODO: Show dialog to select solution comment
+        if (currentThread == null) return;
+
+        new AlertDialog.Builder(this)
+                .setTitle("Mark thread as solved")
+                .setMessage("Mark this thread as solved?")
+                .setPositiveButton("Mark solved",
+                        (DialogInterface dialog, int which) -> {
+                            // Không chọn comment cụ thể, chỉ đánh solved = true
+                            FirebaseFirestore.getInstance()
+                                    .collection("forum_threads")
+                                    .document(threadId)
+                                    .update("solved", true)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(this,
+                                                "Thread marked as solved",
+                                                Toast.LENGTH_SHORT).show();
+                                        btnMarkSolved.setVisibility(View.GONE);
+                                        if (getSupportActionBar() != null) {
+                                            getSupportActionBar()
+                                                    .setTitle("✓ Solved");
+                                        }
+                                    })
+                                    .addOnFailureListener(e ->
+                                            Toast.makeText(this,
+                                                    "Error: " + e.getMessage(),
+                                                    Toast.LENGTH_SHORT).show());
+                        })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
+    // Khi ReplyDialogFragment post thành công
     @Override
     public void onReplyPosted() {
-        // Refresh comments
         loadComments();
 
-        // Update thread reply count
         if (currentThread != null) {
             currentThread.setReplyCount(currentThread.getReplyCount() + 1);
             tvReplyCount.setText(String.valueOf(currentThread.getReplyCount()));
         }
     }
 
+    // Xử lý nút back trên toolbar
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {

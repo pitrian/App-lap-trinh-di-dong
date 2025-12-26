@@ -18,9 +18,9 @@ import java.util.List;
 
 public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHolder> {
 
-    private Context context;
-    private List<ForumPost> commentList;
-    private String currentUserId;
+    private final Context context;
+    private final List<ForumPost> commentList;
+    private final String currentUserId;
     private OnCommentClickListener listener;
 
     public interface OnCommentClickListener {
@@ -28,7 +28,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
         void onUpvoteClick(ForumPost comment);
         void onAuthorClick(String authorId);
         void onMarkAsSolutionClick(ForumPost comment);
-        void onReportClick(ForumPost comment);
+        void onReportClick(ForumPost comment);   // tạm thời chưa có nút, để dành sau
     }
 
     public CommentAdapter(Context context, List<ForumPost> commentList, String currentUserId) {
@@ -53,41 +53,49 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         ForumPost comment = commentList.get(position);
 
-        // Set content
+        // Nội dung
         holder.tvContent.setText(comment.getContent());
 
-        // Set author
+        // Tác giả
         holder.tvAuthor.setText(comment.getAuthorName());
 
-        // Set upvotes
+        // Upvote
         holder.tvUpvotes.setText(String.valueOf(comment.getUpvotes()));
 
-        // Set time
+        // Thời gian
         if (comment.getCreatedAt() != null) {
             holder.tvTime.setText(DateUtils.getTimeAgo(comment.getCreatedAt()));
+        } else {
+            holder.tvTime.setText("");
         }
 
-        // Show solution badge - SỬA: Sử dụng isSolution() thay vì isAnswer()
+        // Badge solution
         holder.ivSolutionBadge.setVisibility(comment.isSolution() ? View.VISIBLE : View.GONE);
 
-        // Adjust margin based on depth - SỬA: Sử dụng getDepth()
+        // Thụt lề theo depth (comment con)
         int depth = comment.getDepth();
-        int margin = depth * 40; // 40dp per level
+        int marginLeft = depth * 40; // muốn đẹp hơn có thể đổi sang dp
 
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) holder.itemView.getLayoutParams();
-        params.leftMargin = margin;
-        holder.itemView.setLayoutParams(params);
+        ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
+        if (lp instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) lp;
+            params.leftMargin = marginLeft;
+            holder.itemView.setLayoutParams(params);
+        }
 
-        // Show reply button only for top-level comments (depth == 0) - SỬA
+        // Chỉ comment level 0 mới được reply
         holder.btnReply.setVisibility(depth == 0 ? View.VISIBLE : View.GONE);
 
-        // Show mark as solution button if user is thread author and comment is not already solution
-        boolean isThreadAuthor = currentUserId != null && currentUserId.equals(comment.getAuthorId());
+        // Tạm cho chính chủ comment được mark solution (sau này có threadAuthorId thì sửa lại)
+        boolean isThreadAuthor = currentUserId != null
+                && currentUserId.equals(comment.getAuthorId());
+
         holder.btnMarkSolution.setVisibility(
-                isThreadAuthor && !comment.isSolution() && depth == 0 ? View.VISIBLE : View.GONE
+                isThreadAuthor && !comment.isSolution() && depth == 0
+                        ? View.VISIBLE : View.GONE
         );
 
-        // Button listeners
+        // Click listeners
         holder.btnReply.setOnClickListener(v -> {
             if (listener != null) listener.onReplyClick(comment);
         });
@@ -104,9 +112,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             if (listener != null) listener.onMarkAsSolutionClick(comment);
         });
 
-        holder.btnReport.setOnClickListener(v -> {
-            if (listener != null) listener.onReportClick(comment);
-        });
+        // CHƯA có nút report trong layout nên không setOnClickListener cho report
     }
 
     @Override
@@ -116,7 +122,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView tvContent, tvAuthor, tvUpvotes, tvTime;
-        ImageView ivSolutionBadge, btnReply, btnUpvote, btnMarkSolution, btnReport;
+        ImageView ivSolutionBadge, btnReply, btnUpvote, btnMarkSolution;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -128,6 +134,7 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.ViewHold
             btnReply = itemView.findViewById(R.id.btnReply);
             btnUpvote = itemView.findViewById(R.id.btnUpvote);
             btnMarkSolution = itemView.findViewById(R.id.btnMarkSolution);
+            // Không gọi findViewById(R.id.btnReport) nữa để tránh lỗi compile
         }
     }
 }
